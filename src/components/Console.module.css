@@ -1,0 +1,66 @@
+.terminal {
+    background: #0e0e0e;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+    background: var(--surface-highlight);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.title {
+    margin-left: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.content {
+    padding: 1rem;
+    height: 400px;
+    overflow-y: auto;
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+
+.line {
+    margin-bottom: 0.25rem;
+    word-break: break-all;
+}
+
+.prompt {
+    color: var(--primary);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.cursor {
+    animation: blink 1s step-end infinite;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}

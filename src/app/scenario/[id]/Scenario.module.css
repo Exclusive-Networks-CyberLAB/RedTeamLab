@@ -1,0 +1,51 @@
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+}
+
+.backLink {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.backLink:hover {
+    color: var(--primary);
+}
+
+.title {
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.controls {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.mitreSection {
+    margin-bottom: 2rem;
+    background: var(--surface);
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}

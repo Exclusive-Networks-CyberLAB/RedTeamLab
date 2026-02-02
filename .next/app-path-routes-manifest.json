@@ -1,0 +1,10 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/execute/route": "/api/execute",
+  "/campaigns/[id]/page": "/campaigns/[id]",
+  "/campaigns/page": "/campaigns",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/",
+  "/scenario/[id]/page": "/scenario/[id]"
+}
