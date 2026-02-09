@@ -136,6 +136,83 @@ export const SCENARIOS: Scenario[] = [
     scriptPath: 'scenarios/exfil_dns.ps1',
     estimatedDuration: '3 mins',
     difficulty: 'Hard'
+  },
+  // WSL-Based Scenarios
+  {
+    id: 'wsl-recon',
+    name: 'WSL Reconnaissance & Enumeration',
+    adversary: 'Red Team Ops',
+    description: 'Executes Linux reconnaissance commands via WSL, accessing Windows filesystem through /mnt/c mount points.',
+    mitreTechniques: [
+      { id: 'T1202', name: 'Indirect Command Execution', url: 'https://attack.mitre.org/techniques/T1202/' },
+      { id: 'T1083', name: 'File and Directory Discovery', url: 'https://attack.mitre.org/techniques/T1083/' }
+    ],
+    scriptPath: 'scenarios/wsl/wsl_recon.ps1',
+    estimatedDuration: '2 mins',
+    difficulty: 'Easy'
+  },
+  {
+    id: 'wsl-defense-evasion',
+    name: 'WSL Defense Evasion',
+    adversary: 'Scattered Spider',
+    description: 'Uses wsl.exe to execute commands, bypassing Windows command-line logging and security controls.',
+    mitreTechniques: [
+      { id: 'T1202', name: 'Indirect Command Execution', url: 'https://attack.mitre.org/techniques/T1202/' },
+      { id: 'T1027', name: 'Obfuscated Files or Information', url: 'https://attack.mitre.org/techniques/T1027/' }
+    ],
+    scriptPath: 'scenarios/wsl/wsl_defense_evasion.ps1',
+    estimatedDuration: '2 mins',
+    difficulty: 'Medium'
+  },
+  {
+    id: 'wsl-reverse-shell',
+    name: 'WSL Reverse Shell',
+    adversary: 'APT28',
+    description: 'Establishes a reverse shell using bash and netcat from within WSL subsystem.',
+    mitreTechniques: [
+      { id: 'T1059.004', name: 'Command and Scripting Interpreter: Unix Shell', url: 'https://attack.mitre.org/techniques/T1059/004/' }
+    ],
+    scriptPath: 'scenarios/wsl/wsl_reverse_shell.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Hard'
+  },
+  {
+    id: 'wsl-file-access',
+    name: 'WSL File Access & Staging',
+    adversary: 'APT1',
+    description: 'Accesses and stages Windows files via WSL mount points for collection and exfiltration.',
+    mitreTechniques: [
+      { id: 'T1005', name: 'Data from Local System', url: 'https://attack.mitre.org/techniques/T1005/' },
+      { id: 'T1074.001', name: 'Data Staged: Local Data Staging', url: 'https://attack.mitre.org/techniques/T1074/001/' }
+    ],
+    scriptPath: 'scenarios/wsl/wsl_file_access.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Medium'
+  },
+  {
+    id: 'wsl-persistence',
+    name: 'WSL Persistence (Cron)',
+    adversary: 'Wizard Spider',
+    description: 'Establishes persistence via cron jobs within WSL that execute when the subsystem is running.',
+    mitreTechniques: [
+      { id: 'T1053.003', name: 'Scheduled Task/Job: Cron', url: 'https://attack.mitre.org/techniques/T1053/003/' }
+    ],
+    scriptPath: 'scenarios/wsl/wsl_persistence.ps1',
+    estimatedDuration: '2 mins',
+    difficulty: 'Medium'
+  },
+  {
+    id: 'wsl-exfil',
+    name: 'WSL Exfiltration (curl/wget)',
+    adversary: 'APT45',
+    description: 'Uses Linux tools (curl, wget, netcat) from WSL to exfiltrate data to C2 server.',
+    mitreTechniques: [
+      { id: 'T1048', name: 'Exfiltration Over Alternative Protocol', url: 'https://attack.mitre.org/techniques/T1048/' },
+      { id: 'T1567', name: 'Exfiltration Over Web Service', url: 'https://attack.mitre.org/techniques/T1567/' }
+    ],
+    scriptPath: 'scenarios/wsl/wsl_exfil.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Hard'
   }
 ];
 
@@ -189,6 +266,14 @@ export const CAMPAIGNS: Campaign[] = [
     name: 'Conti/Ryuk Precursor',
     description: 'The prelude to a ransomware attack: Recon, C2 verification, and spreading via SMB.',
     steps: ['recon-local', 'c2-check', 'lateral-dc', 'defense-evasion']
+  },
+  // WSL-Focused Campaign
+  {
+    id: 'wsl-threat-campaign',
+    adversary: 'Scattered Spider',
+    name: 'WSL Subsystem Exploitation',
+    description: 'Leverages Windows Subsystem for Linux to bypass security controls, establish persistence, and exfiltrate data using native Linux tooling.',
+    steps: ['wsl-recon', 'wsl-defense-evasion', 'wsl-file-access', 'wsl-persistence', 'wsl-exfil']
   }
 ];
 
