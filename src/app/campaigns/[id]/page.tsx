@@ -74,39 +74,38 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
     };
 
     return (
-        <main className={styles.container}>
+        <main className={styles.container} style={{ animation: 'fadeIn 0.3s ease' }}>
             <Link href="/campaigns" className={styles.backLink}>← Back to Campaigns</Link>
 
             <header className={styles.header}>
                 <div className={styles.meta}>
-                    <span className="mono text-warning" style={{ color: 'var(--warning)' }}>[{campaign.adversary}]</span>
+                    <span className="badge" style={{ color: 'var(--warning)', borderColor: 'var(--warning)' }}>[{campaign.adversary}]</span>
                     <span className="mono text-dim">{campaign.steps.length} PHASES</span>
                 </div>
-                <h1 className={`mono ${styles.title}`}>{campaign.name}</h1>
+                <h1 className="mono text-primary glow-text" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{campaign.name}</h1>
                 <p className="text-dim">{campaign.description}</p>
             </header>
 
-            <section className={styles.mitreSection}>
-                <h3 className="mono text-primary" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>CAMPAIGN OPERATIONS CHAIN</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <section className="section-card" style={{ marginBottom: '2rem' }}>
+                <h3>CAMPAIGN OPERATIONS CHAIN</h3>
+                <div style={{ display: 'grid', gap: '0.5rem' }}>
                     {campaign.steps.map((stepId, index) => {
                         const s = SCENARIOS.find(x => x.id === stepId);
                         const isActive = index === currentStepIndex;
                         const isDone = index < currentStepIndex || (currentStepIndex === -1 && logs.length > 0 && isRunning === false);
 
                         return (
-                            <div key={index} style={{
-                                padding: '0.5rem',
-                                background: isActive ? 'rgba(0, 255, 65, 0.1)' : 'transparent',
-                                borderLeft: isActive ? '2px solid var(--primary)' : '2px solid transparent',
-                                opacity: (isRunning && !isActive && !isDone) ? 0.5 : 1
-                            }}>
+                            <div key={index} className={`accent-item ${isActive ? 'active' : ''}`}
+                                style={{
+                                    borderLeftColor: isDone ? '#ff6b35' : isActive ? 'var(--primary)' : 'var(--border)',
+                                    opacity: (isRunning && !isActive && !isDone) ? 0.5 : 1
+                                }}>
                                 <span className="mono text-dim" style={{ marginRight: '1rem' }}>{index + 1}.</span>
                                 <span className="mono" style={{ color: isActive ? 'var(--primary)' : 'var(--text-main)' }}>
                                     {s?.name || stepId}
                                 </span>
-                                {isDone && <span className="text-primary" style={{ float: 'right' }}>[COMPLETED]</span>}
-                                {isActive && <span className="text-primary cursor-blink" style={{ float: 'right' }}>[EXECUTING]</span>}
+                                {isDone && <span className="tag" style={{ float: 'right', background: 'rgba(255, 107, 53, 0.2)', color: '#ff6b35', borderColor: '#ff6b35' }}>COMPLETED</span>}
+                                {isActive && <span className="tag" style={{ float: 'right' }}>EXECUTING</span>}
                             </div>
                         );
                     })}
@@ -128,3 +127,4 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
         </main>
     );
 }
+

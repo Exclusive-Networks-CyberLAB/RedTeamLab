@@ -1,0 +1,120 @@
+/* [project]/src/components/Console.module.css [app-client] (css) */
+.Console-module__pqP0ea__terminal {
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  background: #0e0e0e;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px #00000080;
+}
+
+.Console-module__pqP0ea__header {
+  background: var(--surface-highlight);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  display: flex;
+}
+
+.Console-module__pqP0ea__dot {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+}
+
+.Console-module__pqP0ea__title {
+  color: var(--text-dim);
+  margin-left: 1rem;
+  font-size: .8rem;
+}
+
+.Console-module__pqP0ea__content {
+  height: 400px;
+  color: var(--text-main);
+  padding: 1rem;
+  font-size: .9rem;
+  overflow-y: auto;
+}
+
+.Console-module__pqP0ea__line {
+  word-break: break-all;
+  margin-bottom: .25rem;
+}
+
+.Console-module__pqP0ea__prompt {
+  color: var(--primary);
+  margin-right: .5rem;
+  font-weight: bold;
+}
+
+.Console-module__pqP0ea__cursor {
+  color: var(--primary);
+  font-weight: bold;
+  animation: 1s step-end infinite Console-module__pqP0ea__blink;
+}
+
+@keyframes Console-module__pqP0ea__blink {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/* [project]/src/app/scenario/[id]/Scenario.module.css [app-client] (css) */
+.Scenario-module__OWz1pW__container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.Scenario-module__OWz1pW__header {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+
+.Scenario-module__OWz1pW__backLink {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  margin-bottom: 1rem;
+  font-size: .9rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.Scenario-module__OWz1pW__backLink:hover {
+  color: var(--primary);
+}
+
+.Scenario-module__OWz1pW__title {
+  color: var(--primary);
+  margin-bottom: .5rem;
+  font-size: 2rem;
+}
+
+.Scenario-module__OWz1pW__meta {
+  gap: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+}
+
+.Scenario-module__OWz1pW__controls {
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+}
+
+.Scenario-module__OWz1pW__mitreSection {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  padding: 1rem;
+}
+
+/*# sourceMappingURL=src_6fa2ebe6._.css.map*/

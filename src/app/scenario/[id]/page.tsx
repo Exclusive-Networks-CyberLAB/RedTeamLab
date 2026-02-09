@@ -63,30 +63,32 @@ export default function ScenarioPage({ params }: { params: Promise<{ id: string 
     };
 
     return (
-        <main className={styles.container}>
+        <main className={styles.container} style={{ animation: 'fadeIn 0.3s ease' }}>
             <Link href="/" className={styles.backLink}>← Back to Dashboard</Link>
 
             <header className={styles.header}>
                 <div className={styles.meta}>
-                    <span className="mono text-secondary">[{scenario.adversary}]</span>
+                    <span className="badge" style={{ color: 'var(--secondary)', borderColor: 'var(--secondary)' }}>[{scenario.adversary}]</span>
                     <span className="mono text-dim">{scenario.difficulty}</span>
                     <span className="mono text-dim">{scenario.estimatedDuration}</span>
                 </div>
-                <h1 className={`mono ${styles.title}`}>{scenario.name}</h1>
+                <h1 className="mono text-primary glow-text" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{scenario.name}</h1>
                 <p className="text-dim">{scenario.description}</p>
             </header>
 
-            <section className={styles.mitreSection}>
-                <h3 className="mono text-primary" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>MITRE ATT&CK MAPPING</h3>
-                <ul>
+            <section className="section-card" style={{ marginBottom: '2rem' }}>
+                <h3>MITRE ATT&CK MAPPING</h3>
+                <div style={{ display: 'grid', gap: '0.5rem' }}>
                     {scenario.mitreTechniques.map(t => (
-                        <li key={t.id} className="mono text-dim" style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>
-                            <a href={t.url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>
-                                {t.id}: {t.name}
+                        <div key={t.id} className="accent-item">
+                            <a href={t.url} target="_blank" rel="noopener noreferrer"
+                                className="mono" style={{ color: 'var(--text-main)', textDecoration: 'none' }}>
+                                <span className="text-primary" style={{ marginRight: '0.5rem' }}>{t.id}</span>
+                                {t.name}
                             </a>
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
             </section>
 
             <div className={styles.controls}>

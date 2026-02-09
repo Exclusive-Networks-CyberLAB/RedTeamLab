@@ -163,3 +163,70 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
+
+/* Tags and Badges */
+.tag {
+  background: rgba(0, 255, 65, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Item Lists with Left Border Accent */
+.accent-item {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem 1rem;
+  border-left: 2px solid var(--primary);
+  transition: all 0.2s ease;
+}
+
+.accent-item:hover {
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.accent-item.active {
+  background: rgba(0, 255, 65, 0.1);
+  border-left-width: 3px;
+}
+
+/* Section Cards - matches Threat Library */
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.section-card h3 {
+  font-family: var(--font-mono);
+  color: var(--primary);
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #333;
+}

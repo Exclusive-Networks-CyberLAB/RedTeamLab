@@ -55,37 +55,41 @@ export default function Home() {
       {activeTab === 'threats' ? (
         <ThreatLibrary />
       ) : (
-        <section className={styles.scenariosGrid}>
-          {SCENARIOS.map((scenario) => (
-            <div key={scenario.id} className="card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
-                <span className={`mono ${styles.badge}`}>{scenario.adversary}</span>
-                <span className="text-dim mono" style={{ fontSize: '0.8rem' }}>{scenario.difficulty}</span>
-              </div>
-
-              <h2 className="mono text-primary" style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>
-                {scenario.name}
-              </h2>
-              <p className="text-dim" style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-                {scenario.description}
-              </p>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <p className="mono text-dim" style={{ fontSize: '0.75rem', marginBottom: '0.5rem' }}>MITRE ATT&CK:</p>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {scenario.mitreTechniques.map((tech) => (
-                    <span key={tech.id} className={styles.tag} title={tech.name}>
-                      {tech.id}
-                    </span>
-                  ))}
+        <section style={{ animation: 'fadeIn 0.3s ease' }}>
+          <div className={styles.scenariosGrid}>
+            {SCENARIOS.map((scenario) => (
+              <div key={scenario.id} className="card" style={{ border: '1px solid #333' }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--primary)')}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#333')}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <span className="badge" style={{ color: 'var(--secondary)', borderColor: 'var(--secondary)' }}>{scenario.adversary}</span>
+                  <span className="mono text-dim" style={{ fontSize: '0.8rem' }}>{scenario.difficulty}</span>
                 </div>
-              </div>
 
-              <Link href={`/scenario/${scenario.id}`} className="btn" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
-                INITIALIZE
-              </Link>
-            </div>
-          ))}
+                <h2 className="mono text-primary" style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
+                  {scenario.name}
+                </h2>
+                <p className="text-dim" style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                  {scenario.description.substring(0, 120)}...
+                </p>
+
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <p className="mono text-dim" style={{ fontSize: '0.75rem', marginBottom: '0.5rem' }}>MITRE ATT&CK:</p>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {scenario.mitreTechniques.map((tech) => (
+                      <span key={tech.id} className="tag" title={tech.name}>
+                        {tech.id}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <Link href={`/scenario/${scenario.id}`} className="btn" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
+                  INITIALIZE
+                </Link>
+              </div>
+            ))}
+          </div>
         </section>
       )}
     </main>

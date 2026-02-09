@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/app/scenario/[id]/Scenario.module.css"],"sourcesContent":[".container {\n    max-width: 1000px;\n    margin: 0 auto;\n    padding: 2rem;\n}\n\n.header {\n    margin-bottom: 2rem;\n    border-bottom: 1px solid var(--border);\n    padding-bottom: 1rem;\n}\n\n.backLink {\n    color: var(--text-dim);\n    text-decoration: none;\n    font-family: var(--font-mono);\n    font-size: 0.9rem;\n    display: inline-block;\n    margin-bottom: 1rem;\n}\n\n.backLink:hover {\n    color: var(--primary);\n}\n\n.title {\n    color: var(--primary);\n    font-size: 2rem;\n    margin-bottom: 0.5rem;\n}\n\n.meta {\n    display: flex;\n    gap: 1rem;\n    margin-bottom: 1rem;\n}\n\n.controls {\n    margin-bottom: 2rem;\n    display: flex;\n    gap: 1rem;\n    align-items: center;\n}\n\n.mitreSection {\n    margin-bottom: 2rem;\n    background: var(--surface);\n    padding: 1rem;\n    border-radius: 6px;\n    border: 1px solid var(--border);\n}"],"names":[],"mappings":"AAAA;;;;;;AAMA;;;;;;AAMA;;;;;;;;;AASA;;;;AAIA;;;;;;AAMA;;;;;;AAMA;;;;;;;AAOA"}}]
+}

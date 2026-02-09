@@ -1,0 +1,54 @@
+/* [project]/src/app/scenario/[id]/Scenario.module.css [app-client] (css) */
+.Scenario-module__OWz1pW__container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.Scenario-module__OWz1pW__header {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+
+.Scenario-module__OWz1pW__backLink {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  margin-bottom: 1rem;
+  font-size: .9rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.Scenario-module__OWz1pW__backLink:hover {
+  color: var(--primary);
+}
+
+.Scenario-module__OWz1pW__title {
+  color: var(--primary);
+  margin-bottom: .5rem;
+  font-size: 2rem;
+}
+
+.Scenario-module__OWz1pW__meta {
+  gap: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+}
+
+.Scenario-module__OWz1pW__controls {
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+}
+
+.Scenario-module__OWz1pW__mitreSection {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  padding: 1rem;
+}
+
+/*# sourceMappingURL=src_app_scenario_%5Bid%5D_Scenario_module_css_bad6b30c._.single.css.map*/

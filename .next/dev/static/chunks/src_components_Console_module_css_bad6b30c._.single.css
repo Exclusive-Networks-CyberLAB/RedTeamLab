@@ -1,0 +1,67 @@
+/* [project]/src/components/Console.module.css [app-client] (css) */
+.Console-module__pqP0ea__terminal {
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  background: #0e0e0e;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px #00000080;
+}
+
+.Console-module__pqP0ea__header {
+  background: var(--surface-highlight);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  display: flex;
+}
+
+.Console-module__pqP0ea__dot {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+}
+
+.Console-module__pqP0ea__title {
+  color: var(--text-dim);
+  margin-left: 1rem;
+  font-size: .8rem;
+}
+
+.Console-module__pqP0ea__content {
+  height: 400px;
+  color: var(--text-main);
+  padding: 1rem;
+  font-size: .9rem;
+  overflow-y: auto;
+}
+
+.Console-module__pqP0ea__line {
+  word-break: break-all;
+  margin-bottom: .25rem;
+}
+
+.Console-module__pqP0ea__prompt {
+  color: var(--primary);
+  margin-right: .5rem;
+  font-weight: bold;
+}
+
+.Console-module__pqP0ea__cursor {
+  color: var(--primary);
+  font-weight: bold;
+  animation: 1s step-end infinite Console-module__pqP0ea__blink;
+}
+
+@keyframes Console-module__pqP0ea__blink {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/*# sourceMappingURL=src_components_Console_module_css_bad6b30c._.single.css.map*/
