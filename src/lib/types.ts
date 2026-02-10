@@ -213,6 +213,215 @@ export const SCENARIOS: Scenario[] = [
     scriptPath: 'scenarios/wsl/wsl_exfil.ps1',
     estimatedDuration: '3 mins',
     difficulty: 'Hard'
+  },
+  // LOLBin Download Chains
+  {
+    id: 'lolbin-certutil',
+    name: 'LOLBin Download (certutil)',
+    adversary: 'APT28',
+    description: 'Uses certutil.exe to download offensive tools from C2 server, triggering LOLBin detection rules.',
+    mitreTechniques: [
+      { id: 'T1105', name: 'Ingress Tool Transfer', url: 'https://attack.mitre.org/techniques/T1105/' },
+      { id: 'T1140', name: 'Deobfuscate/Decode Files', url: 'https://attack.mitre.org/techniques/T1140/' }
+    ],
+    scriptPath: 'scenarios/lolbin/certutil_download.ps1',
+    estimatedDuration: '2 mins',
+    difficulty: 'Easy'
+  },
+  {
+    id: 'lolbin-bitsadmin',
+    name: 'LOLBin Download (bitsadmin)',
+    adversary: 'APT1',
+    description: 'Creates BITS jobs to stealthily download tools from C2, disguised as Windows Update activity.',
+    mitreTechniques: [
+      { id: 'T1197', name: 'BITS Jobs', url: 'https://attack.mitre.org/techniques/T1197/' },
+      { id: 'T1105', name: 'Ingress Tool Transfer', url: 'https://attack.mitre.org/techniques/T1105/' }
+    ],
+    scriptPath: 'scenarios/lolbin/bitsadmin_download.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Medium'
+  },
+  {
+    id: 'lolbin-mshta',
+    name: 'LOLBin Execution (mshta)',
+    adversary: 'Wizard Spider',
+    description: 'Uses mshta.exe for signed binary proxy execution of HTA payloads with embedded VBScript.',
+    mitreTechniques: [
+      { id: 'T1218.005', name: 'Signed Binary Proxy Execution: Mshta', url: 'https://attack.mitre.org/techniques/T1218/005/' }
+    ],
+    scriptPath: 'scenarios/lolbin/mshta_execute.ps1',
+    estimatedDuration: '2 mins',
+    difficulty: 'Medium'
+  },
+  {
+    id: 'lolbin-powershell-cradle',
+    name: 'PowerShell Download Cradles',
+    adversary: 'Scattered Spider',
+    description: 'Demonstrates multiple PowerShell download methods: IWR, WebClient, DownloadString, and BITS Transfer.',
+    mitreTechniques: [
+      { id: 'T1059.001', name: 'PowerShell', url: 'https://attack.mitre.org/techniques/T1059/001/' },
+      { id: 'T1105', name: 'Ingress Tool Transfer', url: 'https://attack.mitre.org/techniques/T1105/' }
+    ],
+    scriptPath: 'scenarios/lolbin/powershell_download.ps1',
+    estimatedDuration: '2 mins',
+    difficulty: 'Easy'
+  },
+  // Credential Access
+  {
+    id: 'cred-mimikatz',
+    name: 'Mimikatz Credential Dump',
+    adversary: 'APT28',
+    description: 'Downloads and executes Mimikatz for sekurlsa::logonpasswords, lsadump::cache, and Kerberos ticket extraction.',
+    mitreTechniques: [
+      { id: 'T1003.001', name: 'OS Credential Dumping: LSASS Memory', url: 'https://attack.mitre.org/techniques/T1003/001/' },
+      { id: 'T1003.003', name: 'OS Credential Dumping: NTDS', url: 'https://attack.mitre.org/techniques/T1003/003/' }
+    ],
+    scriptPath: 'scenarios/credential_access/mimikatz_dump.ps1',
+    estimatedDuration: '5 mins',
+    difficulty: 'Hard'
+  },
+  {
+    id: 'cred-comsvcs-lsass',
+    name: 'LSASS Dump (comsvcs.dll)',
+    adversary: 'Red Team Ops',
+    description: 'Uses native comsvcs.dll MiniDump via rundll32 to dump LSASS memory - no external tools required.',
+    mitreTechniques: [
+      { id: 'T1003.001', name: 'OS Credential Dumping: LSASS Memory', url: 'https://attack.mitre.org/techniques/T1003/001/' }
+    ],
+    scriptPath: 'scenarios/credential_access/comsvcs_lsass.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Medium'
+  },
+  {
+    id: 'cred-sam-extract',
+    name: 'SAM/SYSTEM Registry Extraction',
+    adversary: 'APT1',
+    description: 'Extracts SAM, SYSTEM, and SECURITY registry hives for offline credential cracking with secretsdump.',
+    mitreTechniques: [
+      { id: 'T1003.002', name: 'OS Credential Dumping: SAM', url: 'https://attack.mitre.org/techniques/T1003/002/' }
+    ],
+    scriptPath: 'scenarios/credential_access/sam_extract.ps1',
+    estimatedDuration: '2 mins',
+    difficulty: 'Medium'
+  },
+  {
+    id: 'cred-procdump-lsass',
+    name: 'LSASS Dump (Procdump)',
+    adversary: 'APT45',
+    description: 'Uses Microsoft-signed Sysinternals Procdump to create a full memory dump of LSASS process.',
+    mitreTechniques: [
+      { id: 'T1003.001', name: 'OS Credential Dumping: LSASS Memory', url: 'https://attack.mitre.org/techniques/T1003/001/' },
+      { id: 'T1105', name: 'Ingress Tool Transfer', url: 'https://attack.mitre.org/techniques/T1105/' }
+    ],
+    scriptPath: 'scenarios/credential_access/procdump_lsass.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Hard'
+  },
+  // Lateral Movement
+  {
+    id: 'lateral-psexec',
+    name: 'PsExec Remote Execution',
+    adversary: 'APT28',
+    description: 'Downloads PsExec and executes commands remotely via SMB service creation (PSEXESVC).',
+    mitreTechniques: [
+      { id: 'T1569.002', name: 'System Services: Service Execution', url: 'https://attack.mitre.org/techniques/T1569/002/' },
+      { id: 'T1021.002', name: 'Remote Services: SMB', url: 'https://attack.mitre.org/techniques/T1021/002/' }
+    ],
+    scriptPath: 'scenarios/lateral_movement/psexec_remote.ps1',
+    estimatedDuration: '5 mins',
+    difficulty: 'Hard'
+  },
+  {
+    id: 'lateral-wmi',
+    name: 'WMI Remote Execution',
+    adversary: 'Red Team Ops',
+    description: 'Uses native WMI for remote process creation and system enumeration - no external tools needed.',
+    mitreTechniques: [
+      { id: 'T1047', name: 'Windows Management Instrumentation', url: 'https://attack.mitre.org/techniques/T1047/' }
+    ],
+    scriptPath: 'scenarios/lateral_movement/wmiexec_remote.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Medium'
+  },
+  {
+    id: 'lateral-pth',
+    name: 'Pass-the-Hash Attack',
+    adversary: 'Scattered Spider',
+    description: 'Uses Mimikatz sekurlsa::pth to authenticate with extracted NTLM hashes for lateral movement.',
+    mitreTechniques: [
+      { id: 'T1550.002', name: 'Pass the Hash', url: 'https://attack.mitre.org/techniques/T1550/002/' },
+      { id: 'T1003.001', name: 'OS Credential Dumping: LSASS Memory', url: 'https://attack.mitre.org/techniques/T1003/001/' }
+    ],
+    scriptPath: 'scenarios/lateral_movement/pth_attack.ps1',
+    estimatedDuration: '5 mins',
+    difficulty: 'Hard'
+  },
+  {
+    id: 'lateral-smb',
+    name: 'SMB Admin Share Lateral',
+    adversary: 'Wizard Spider',
+    description: 'Accesses C$/ADMIN$ shares, copies payloads, and schedules remote execution via schtasks.',
+    mitreTechniques: [
+      { id: 'T1021.002', name: 'Remote Services: SMB', url: 'https://attack.mitre.org/techniques/T1021/002/' },
+      { id: 'T1570', name: 'Lateral Tool Transfer', url: 'https://attack.mitre.org/techniques/T1570/' },
+      { id: 'T1053.005', name: 'Scheduled Task', url: 'https://attack.mitre.org/techniques/T1053/005/' }
+    ],
+    scriptPath: 'scenarios/lateral_movement/smb_lateral.ps1',
+    estimatedDuration: '5 mins',
+    difficulty: 'Hard'
+  },
+  // BYOVD - EDR Bypass
+  {
+    id: 'byovd-rtcore',
+    name: 'BYOVD: RTCore64 EDR Kill',
+    adversary: 'Wizard Spider',
+    description: 'Loads vulnerable MSI Afterburner driver (CVE-2019-16098) for kernel-level EDR callback removal.',
+    mitreTechniques: [
+      { id: 'T1562.001', name: 'Impair Defenses: Disable or Modify Tools', url: 'https://attack.mitre.org/techniques/T1562/001/' },
+      { id: 'T1068', name: 'Exploitation for Privilege Escalation', url: 'https://attack.mitre.org/techniques/T1068/' }
+    ],
+    scriptPath: 'scenarios/byovd/byovd_rtcore.ps1',
+    estimatedDuration: '5 mins',
+    difficulty: 'Hard'
+  },
+  {
+    id: 'byovd-dbutil',
+    name: 'BYOVD: Dell dbutil Exploit',
+    adversary: 'APT45',
+    description: 'Uses Dell dbutil_2_3.sys (CVE-2021-21551) for kernel R/W - attributed to Lazarus APT group.',
+    mitreTechniques: [
+      { id: 'T1562.001', name: 'Impair Defenses: Disable or Modify Tools', url: 'https://attack.mitre.org/techniques/T1562/001/' },
+      { id: 'T1068', name: 'Exploitation for Privilege Escalation', url: 'https://attack.mitre.org/techniques/T1068/' }
+    ],
+    scriptPath: 'scenarios/byovd/byovd_dbutil.ps1',
+    estimatedDuration: '5 mins',
+    difficulty: 'Hard'
+  },
+  {
+    id: 'byovd-terminator',
+    name: 'Terminator EDR Kill',
+    adversary: 'Scattered Spider',
+    description: 'Uses Terminator BYOVD tool to enumerate and terminate EDR processes via signed kernel driver abuse.',
+    mitreTechniques: [
+      { id: 'T1562.001', name: 'Impair Defenses: Disable or Modify Tools', url: 'https://attack.mitre.org/techniques/T1562/001/' },
+      { id: 'T1518.001', name: 'Security Software Discovery', url: 'https://attack.mitre.org/techniques/T1518/001/' }
+    ],
+    scriptPath: 'scenarios/byovd/terminator_edr.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Hard'
+  },
+  {
+    id: 'edr-process-kill',
+    name: 'Multi-Method EDR Disable',
+    adversary: 'Red Team Ops',
+    description: 'Attempts to disable EDR via PowerShell, service stops, taskkill, registry, and AMSI bypass.',
+    mitreTechniques: [
+      { id: 'T1562.001', name: 'Impair Defenses: Disable or Modify Tools', url: 'https://attack.mitre.org/techniques/T1562/001/' },
+      { id: 'T1518.001', name: 'Security Software Discovery', url: 'https://attack.mitre.org/techniques/T1518/001/' }
+    ],
+    scriptPath: 'scenarios/byovd/edr_process_kill.ps1',
+    estimatedDuration: '3 mins',
+    difficulty: 'Medium'
   }
 ];
 
@@ -274,6 +483,21 @@ export const CAMPAIGNS: Campaign[] = [
     name: 'WSL Subsystem Exploitation',
     description: 'Leverages Windows Subsystem for Linux to bypass security controls, establish persistence, and exfiltrate data using native Linux tooling.',
     steps: ['wsl-recon', 'wsl-defense-evasion', 'wsl-file-access', 'wsl-persistence', 'wsl-exfil']
+  },
+  // Advanced Campaigns
+  {
+    id: 'ransomware-precursor-campaign',
+    adversary: 'Wizard Spider',
+    name: 'Ransomware Precursor Chain',
+    description: 'Full ransomware preparation chain: LOLBin tool staging, credential harvesting with Mimikatz, lateral movement via PsExec, and EDR termination via BYOVD.',
+    steps: ['lolbin-certutil', 'cred-mimikatz', 'lateral-psexec', 'byovd-terminator']
+  },
+  {
+    id: 'apt-fullchain-campaign',
+    adversary: 'APT28',
+    name: 'APT Full Intrusion Chain',
+    description: 'Sophisticated APT attack: stealthy BITS download, LSASS credential dump, WMI lateral movement, and kernel-level EDR bypass via vulnerable driver.',
+    steps: ['lolbin-bitsadmin', 'cred-procdump-lsass', 'lateral-wmi', 'lateral-pth', 'byovd-rtcore']
   }
 ];
 
