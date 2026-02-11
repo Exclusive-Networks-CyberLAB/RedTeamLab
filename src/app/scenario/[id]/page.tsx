@@ -21,12 +21,13 @@ export default function ScenarioPage({ params }: { params: Promise<{ id: string 
     const handleExecute = async () => {
         setIsRunning(true);
         const c2Host = localStorage.getItem('c2_host');
+        const targetIp = localStorage.getItem('target_ip');
 
         if (!c2Host) {
             setLogs(prev => [...prev, '[!] WARNING: No C2 Server set. Please configure in header.']);
         }
 
-        setLogs((prev) => [...prev, `[INFO] Initializing ${scenario.name}...`, `[INFO] Adversary Infrastructure: ${c2Host || 'Unknown'}`]);
+        setLogs((prev) => [...prev, `[INFO] Initializing ${scenario.name}...`, `[INFO] Target: ${targetIp || 'Not set'}`, `[INFO] Adversary Infrastructure: ${c2Host || 'Unknown'}`]);
 
         try {
             const response = await fetch('/api/execute', {
@@ -34,7 +35,8 @@ export default function ScenarioPage({ params }: { params: Promise<{ id: string 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     scriptPath: scenario.scriptPath,
-                    c2Host: c2Host
+                    c2Host: c2Host,
+                    targetIp: targetIp
                 }),
             });
 

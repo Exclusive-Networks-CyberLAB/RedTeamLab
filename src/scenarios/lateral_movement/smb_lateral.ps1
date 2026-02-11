@@ -1,9 +1,6 @@
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$TargetIP
-)
-
 $ErrorActionPreference = "SilentlyContinue"
+$TargetIP = if ($env:TARGET_IP) { $env:TARGET_IP } else { "192.168.1.10" }
+
 Write-Host "[*] Starting Lateral Movement - SMB Admin Share Access..." -ForegroundColor Cyan
 
 # T1021.002 - Remote Services: SMB/Windows Admin Shares

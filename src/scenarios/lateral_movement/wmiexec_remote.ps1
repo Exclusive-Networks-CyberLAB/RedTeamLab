@@ -1,9 +1,6 @@
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$TargetIP
-)
-
 $ErrorActionPreference = "SilentlyContinue"
+$TargetIP = if ($env:TARGET_IP) { $env:TARGET_IP } else { "192.168.1.10" }
+
 Write-Host "[*] Starting Lateral Movement - WMI Execution..." -ForegroundColor Cyan
 
 # T1047 - Windows Management Instrumentation

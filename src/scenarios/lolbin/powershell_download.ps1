@@ -1,9 +1,6 @@
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$C2Host
-)
-
 $ErrorActionPreference = "SilentlyContinue"
+$C2Host = if ($env:C2_HOST) { $env:C2_HOST } else { "127.0.0.1" }
+
 Write-Host "[*] Starting LOLBin Download - PowerShell Cradles..." -ForegroundColor Cyan
 
 # T1059.001 - PowerShell

