@@ -1,0 +1,214 @@
+.sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 50;
+    box-shadow: 1px 0 12px rgba(255, 26, 26, 0.05);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+    min-width: 60px;
+}
+
+/* Brand */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    min-height: 60px;
+    position: relative;
+}
+
+.logo {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    color: var(--primary);
+    text-shadow: 0 0 15px var(--primary), 0 0 30px rgba(255, 26, 26, 0.3);
+    letter-spacing: 2px;
+    animation: flicker 4s infinite;
+    flex-shrink: 0;
+    width: 36px;
+    text-align: center;
+}
+
+.logoFull {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--primary);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s;
+    text-decoration: none;
+}
+
+.sidebar.collapsed .logoFull {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem 0.4rem;
+    border-radius: 4px;
+    transition: all 0.3s;
+    line-height: 1;
+}
+
+.toggle:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: 0 0 10px rgba(255, 26, 26, 0.3);
+}
+
+.sidebar.collapsed .toggle {
+    position: static;
+    transform: none;
+    margin-left: auto;
+}
+
+/* Navigation */
+.nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 0;
+    gap: 2px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.navItem:hover {
+    color: var(--primary);
+    background: rgba(255, 26, 26, 0.04);
+    border-left-color: rgba(255, 26, 26, 0.3);
+}
+
+.navItem.active {
+    color: var(--primary);
+    background: rgba(255, 26, 26, 0.08);
+    border-left-color: var(--primary);
+    text-shadow: 0 0 8px rgba(255, 26, 26, 0.4);
+}
+
+.navIcon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+}
+
+.navLabel {
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.sidebar.collapsed .navLabel {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .navItem {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    border-left-width: 0;
+}
+
+.sidebar.collapsed .navItem.active {
+    background: rgba(255, 26, 26, 0.12);
+    border-left-width: 0;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* Footer */
+.footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+.footerText {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: rgba(255, 26, 26, 0.3);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .footerText {
+    display: none;
+}
+
+@keyframes flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    92% {
+        opacity: 1;
+    }
+
+    93% {
+        opacity: 0.7;
+    }
+
+    94% {
+        opacity: 1;
+    }
+
+    96% {
+        opacity: 0.9;
+    }
+
+    97% {
+        opacity: 1;
+    }
+}

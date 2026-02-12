@@ -5,10 +5,10 @@
   --surface: #0a0a0a;
   --surface-highlight: #121212;
   --border: #333;
-  --primary: #00ff41;
-  --primary-glow: #00ff414d;
-  --secondary: #f0f;
-  --secondary-glow: #ff00ff4d;
+  --primary: #ff1a1a;
+  --primary-glow: #ff1a1a4d;
+  --secondary: #ff8c00;
+  --secondary-glow: #ff8c004d;
   --danger: #f33;
   --warning: #fc0;
   --text-main: #eee;
@@ -152,8 +152,8 @@ body {
   color: var(--primary);
   font-size: .75rem;
   font-family: var(--font-mono);
-  background: #00ff411a;
-  border: 1px solid #00ff4133;
+  background: #ff1a1a1a;
+  border: 1px solid #ff1a1a33;
   border-radius: 3px;
   padding: .2rem .5rem;
 }
@@ -187,11 +187,11 @@ body {
 }
 
 .accent-item:hover {
-  background: #00ff410d;
+  background: #ff1a1a0d;
 }
 
 .accent-item.active {
-  background: #00ff411a;
+  background: #ff1a1a1a;
   border-left-width: 3px;
 }
 

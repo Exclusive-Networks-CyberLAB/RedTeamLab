@@ -11,9 +11,9 @@
   /* Crimson Red */
   --primary-glow: rgba(255, 26, 26, 0.3);
 
-  --secondary: #ff00ff;
-  /* Neon Magenta */
-  --secondary-glow: rgba(255, 0, 255, 0.3);
+  --secondary: #ff8c00;
+  /* Dark Amber */
+  --secondary-glow: rgba(255, 140, 0, 0.3);
 
   --danger: #ff3333;
   --warning: #ffcc00;

@@ -1,14 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 export default function GlobalHeader() {
     const [c2, setC2] = useState('');
     const [targetIp, setTargetIp] = useState('');
     const [ipError, setIpError] = useState(false);
-    const pathname = usePathname();
 
     useEffect(() => {
         const savedC2 = localStorage.getItem('c2_host');
@@ -16,7 +13,7 @@ export default function GlobalHeader() {
 
         const savedIp = localStorage.getItem('target_ip');
         if (savedIp) setTargetIp(savedIp);
-        else setTargetIp('127.0.0.1'); // Default to localhost
+        else setTargetIp('127.0.0.1');
     }, []);
 
     const handleC2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +26,6 @@ export default function GlobalHeader() {
         const newVal = e.target.value;
         setTargetIp(newVal);
 
-        // Simple IPv4 Regex
         const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
         if (newVal === 'localhost' || ipRegex.test(newVal)) {
@@ -43,37 +39,15 @@ export default function GlobalHeader() {
     return (
         <header style={{
             display: 'flex',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-end',
             alignItems: 'center',
-            padding: '1rem 2rem',
+            padding: '0.75rem 2rem',
             borderBottom: '1px solid var(--border)',
             background: 'var(--background)',
             position: 'sticky',
             top: 0,
             zIndex: 100
         }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                <Link href="/" style={{ textDecoration: 'none' }}>
-                    <h1 className="mono glow-text" style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text-main)' }}>
-                        RED TEAM LAB
-                    </h1>
-                </Link>
-                <nav style={{ display: 'flex', gap: '1rem' }}>
-                    <Link
-                        href="/"
-                        className={`nav-tab ${pathname === '/' ? 'active' : ''}`}
-                    >
-                        SCENARIOS
-                    </Link>
-                    <Link
-                        href="/campaigns"
-                        className={`nav-tab ${pathname === '/campaigns' ? 'active-campaign' : ''}`}
-                    >
-                        CAMPAIGNS
-                    </Link>
-                </nav>
-            </div>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                 {/* Target IP Input */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>

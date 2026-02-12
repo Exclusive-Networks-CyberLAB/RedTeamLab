@@ -66,7 +66,7 @@ export default function ScenarioPage({ params }: { params: Promise<{ id: string 
 
     return (
         <main className={styles.container} style={{ animation: 'fadeIn 0.3s ease' }}>
-            <Link href="/" className={styles.backLink}>← Back to Dashboard</Link>
+            <Link href="/" className={styles.backLink}>← Back to Scenarios</Link>
 
             <header className={styles.header}>
                 <div className={styles.meta}>

@@ -1,0 +1,42 @@
+/* [project]/src/app/page.module.css [app-client] (css) */
+.page-module___8aEwW__header {
+  border-bottom: 1px solid var(--border);
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  display: flex;
+}
+
+.page-module___8aEwW__status {
+  text-align: right;
+  flex-direction: column;
+  display: flex;
+}
+
+.page-module___8aEwW__scenariosGrid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  display: grid;
+}
+
+.page-module___8aEwW__badge {
+  border: 1px solid var(--border);
+  color: var(--secondary);
+  background: #ffffff0d;
+  border-radius: 4px;
+  padding: .25rem .5rem;
+  font-size: .75rem;
+}
+
+.page-module___8aEwW__tag {
+  color: var(--primary);
+  font-size: .7rem;
+  font-family: var(--font-mono);
+  background: #ff1a1a1a;
+  border: 1px solid #ff1a1a33;
+  border-radius: 3px;
+  padding: .2rem .4rem;
+}
+
+/*# sourceMappingURL=src_app_page_module_css_bad6b30c._.single.css.map*/

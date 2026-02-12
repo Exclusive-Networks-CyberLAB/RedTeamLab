@@ -14,8 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <GlobalHeader />
+      <body style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
         {children}
       </body>
     </html>

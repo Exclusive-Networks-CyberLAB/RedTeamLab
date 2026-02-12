@@ -75,7 +75,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
     return (
         <main className={styles.container} style={{ animation: 'fadeIn 0.3s ease' }}>
-            <Link href="/campaigns" className={styles.backLink}>← Back to Campaigns</Link>
+            <Link href="/" className={styles.backLink}>← Back to Campaigns</Link>
 
             <header className={styles.header}>
                 <div className={styles.meta}>
