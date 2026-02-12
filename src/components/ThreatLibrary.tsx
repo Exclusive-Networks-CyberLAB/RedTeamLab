@@ -133,7 +133,7 @@ export default function ThreatLibrary() {
                     ← BACK TO LIBRARY
                 </button>
 
-                <div className="card" style={{ border: '1px solid var(--primary)', boxShadow: '0 0 15px rgba(0, 255, 65, 0.1)' }}>
+                <div className="card" style={{ border: '1px solid var(--primary)', boxShadow: '0 0 15px rgba(255, 26, 26, 0.1)' }}>
                     <h1 className="mono text-primary" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
                         {selectedActor.name}
                     </h1>

@@ -7,9 +7,9 @@
   --border: #333333;
 
   /* Cyberpunk Accents */
-  --primary: #00ff41;
-  /* Terminal Green */
-  --primary-glow: rgba(0, 255, 65, 0.3);
+  --primary: #ff1a1a;
+  /* Crimson Red */
+  --primary-glow: rgba(255, 26, 26, 0.3);
 
   --secondary: #ff00ff;
   /* Neon Magenta */
@@ -166,9 +166,9 @@ body {
 
 /* Tags and Badges */
 .tag {
-  background: rgba(0, 255, 65, 0.1);
+  background: rgba(255, 26, 26, 0.1);
   color: var(--primary);
-  border: 1px solid rgba(0, 255, 65, 0.2);
+  border: 1px solid rgba(255, 26, 26, 0.2);
   padding: 0.2rem 0.5rem;
   border-radius: 3px;
   font-size: 0.75rem;
@@ -206,11 +206,11 @@ body {
 }
 
 .accent-item:hover {
-  background: rgba(0, 255, 65, 0.05);
+  background: rgba(255, 26, 26, 0.05);
 }
 
 .accent-item.active {
-  background: rgba(0, 255, 65, 0.1);
+  background: rgba(255, 26, 26, 0.1);
   border-left-width: 3px;
 }
 
