@@ -1,6 +1,6 @@
 # 🔴 Red Team Lab
 
-A **Next.js-powered** red team simulation platform for executing adversary attack emulations against Windows endpoints. Execute real-world TTPs from known threat actors to validate EDR detections and test your security controls.
+A **Python/Flask** red team simulation platform for executing adversary attack emulations against Windows endpoints. Execute real-world TTPs from known threat actors to validate EDR detections and test your security controls.
 
 ---
 
@@ -35,18 +35,18 @@ A **Next.js-powered** red team simulation platform for executing adversary attac
 
 Before installing, ensure you have the following software installed on your system:
 
-### Node.js
+### Python
 
-- **Required Version**: Node.js 18.x or later (LTS recommended)
-- **Download**: [https://nodejs.org/](https://nodejs.org/)
+- **Required Version**: Python 3.9 or later
+- **Download**: [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
 **Verify Installation:**
 ```bash
-node --version
-# Expected output: v18.x.x or higher
+python3 --version
+# Expected output: Python 3.9.x or higher
 
-npm --version  
-# Expected output: 9.x.x or higher
+pip3 --version
+# Expected output: pip 21.x or higher
 ```
 
 ### Target Environment
@@ -60,82 +60,49 @@ npm --version
 
 ## 🚀 Installation
 
-### 1. Clone or Download the Repository
+### 1. Clone the Repository
 
 ```bash
-# If using Git
-git clone <repository-url> red-team-lab
-cd red-team-lab
-
-# Or if you have the folder already
-cd /path/to/RTL
+git clone https://github.com/Exclusive-Networks-CyberLAB/RedTeamLab.git
+cd RedTeamLab
 ```
 
-### 2. Install Dependencies
-
-Run the following command to install all required Node.js packages:
+### 2. Create a Virtual Environment
 
 ```bash
-npm install
+python3 -m venv venv
+source venv/bin/activate    # macOS/Linux
+# venv\Scripts\activate     # Windows
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
 ```
 
 This will install:
-- **Next.js 16.1.1** - React framework for the web application
-- **React 19.2.3** - UI library
-- **TypeScript** - Type-safe JavaScript
-- **ESLint** - Code linting
-
-### 3. Verify Installation
-
-Ensure all dependencies are correctly installed:
-
-```bash
-npm ls
-```
+- **Flask 3.x** — Web framework for the application
 
 ---
 
 ## ▶️ Running the Application
 
-### Development Mode (Recommended)
-
-Start the development server with hot-reloading:
+### Start the Server
 
 ```bash
-npm run dev
+source venv/bin/activate    # Activate venv if not already active
+python app.py
 ```
 
 **Output:**
 ```
-▲ Next.js 16.1.1
-- Local:        http://localhost:3000
-- Environments: .env.local
-
-✓ Ready in 2.3s
+ * Serving Flask app 'app'
+ * Debug mode: on
+ * Running on http://127.0.0.1:5001
 ```
 
-Open your browser and navigate to **[http://localhost:3000](http://localhost:3000)**
-
-### Production Build
-
-For production deployment:
-
-```bash
-# Build the application
-npm run build
-
-# Start the production server
-npm start
-```
-
-### Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot-reload |
-| `npm run build` | Create optimized production build |
-| `npm start` | Start production server |
-| `npm run lint` | Run ESLint for code quality checks |
+Open your browser and navigate to **[http://localhost:5001](http://localhost:5001)**
 
 ---
 
@@ -143,7 +110,7 @@ npm start
 
 ### Atomic Scenarios
 
-Individual TTPs that can be executed independently. Access via the **Dashboard** at `http://localhost:3000`.
+Individual TTPs that can be executed independently. Access via the **Scenarios** tab in the sidebar.
 
 | Scenario | Adversary | MITRE ID | Difficulty |
 |----------|-----------|----------|------------|
@@ -159,7 +126,7 @@ Individual TTPs that can be executed independently. Access via the **Dashboard**
 
 ### Adversary Campaigns
 
-Multi-stage attack chains accessible via **Adversary Campaigns** at `http://localhost:3000/campaigns`.
+Multi-stage attack chains accessible via the **Campaigns** tab in the sidebar.
 
 | Campaign | Adversary | Steps | Description |
 |----------|-----------|-------|-------------|
@@ -170,10 +137,13 @@ Multi-stage attack chains accessible via **Adversary Campaigns** at `http://loca
 | North Korean Info Stealer | APT45 | 3 | Rapid collection and credential theft |
 | PlugX Propagation | Mustang Panda | 3 | Lateral movement and C2 beaconing |
 | Conti/Ryuk Precursor | Wizard Spider | 4 | Ransomware attack prelude |
+| WSL Subsystem Exploitation | Scattered Spider | 5 | Linux-based bypass via WSL |
+| Ransomware Precursor Chain | Wizard Spider | 4 | LOLBin staging → Mimikatz → PsExec → BYOVD |
+| APT Full Intrusion Chain | APT28 | 5 | BITS download → Procdump → WMI → PtH → BYOVD |
 
 ### Threat Actor Library
 
-Detailed TTP libraries for 10+ threat actors, accessible via the **Threat Library** page:
+Detailed TTP libraries for 10+ threat actors, accessible via the **Adversaries** tab in the sidebar:
 
 | Threat Actor | Aliases | Notable TTPs |
 |--------------|---------|--------------|
@@ -192,44 +162,39 @@ Detailed TTP libraries for 10+ threat actors, accessible via the **Threat Librar
 
 ## 📖 Usage Guide
 
+### Configuring Target & C2
+
+1. In the **sidebar**, enter your **Target IP** and **C2 Host**
+2. These values persist across page navigation via local storage
+3. The C2 status indicator (dot) shows green when configured
+
 ### Executing an Atomic Scenario
 
-1. Navigate to the **Dashboard** at `http://localhost:3000`
+1. Click **SCENARIOS** in the sidebar
 2. Select a scenario card (e.g., "Host Reconnaissance")
 3. Review the MITRE technique details and estimated duration
-4. Enter required parameters:
-   - **Target IP**: The IP address of the target host
-   - **C2 Server**: Your command & control server address
+4. Click **INITIALIZE** to open the execution page
 5. Click **EXECUTE SCENARIO**
 6. Monitor the terminal output for results
 
 ### Running an Adversary Campaign
 
-1. Navigate to **Adversary Campaigns** at `http://localhost:3000/campaigns`
+1. Click **CAMPAIGNS** in the sidebar
 2. Select a campaign (e.g., "Operation XAgent")
 3. Review the attack chain steps
-4. Click **INITIATE CAMPAIGN**
-5. Enter the required target parameters:
-   - **Target IP**: Primary target host
-   - **C2 Server**: Callback server for exfiltration
-6. The campaign will execute each step sequentially
+4. Click **INITIATE CAMPAIGN** to open the execution page
+5. Click **EXECUTE CAMPAIGN**
+6. The campaign will execute each step sequentially with progress indicators
 7. Monitor output and observe EDR alerts
 
 ### Using the Threat Library
 
-1. Navigate to the **Threat Library** page
-2. Select a threat actor (e.g., "LockBit 3.0")
+1. Click **ADVERSARIES** in the sidebar (default view)
+2. Select a threat actor card (e.g., "LockBit 3.0")
 3. Browse available TTPs organized by MITRE tactic
-4. Click **EXECUTE** on any TTP to run it
-5. For TTPs with modifications, use **REVERT** to undo changes
-
-### Reverting System Changes
-
-Some TTPs modify system state (registry, services, etc.). To revert:
-
-1. After executing a TTP, look for the **REVERT** button
-2. Click **REVERT** to execute the corresponding `_revert.ps1` script
-3. Verify the system returns to its original state
+4. Fill in any required input parameters (IP, URL, etc.)
+5. Click **EXECUTE** on any TTP to run it
+6. For TTPs with system modifications, use **REVERT** to undo changes
 
 ---
 
@@ -237,33 +202,36 @@ Some TTPs modify system state (registry, services, etc.). To revert:
 
 ```
 RTL/
-├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── page.tsx           # Dashboard (Atomic Scenarios)
-│   │   ├── campaigns/         # Adversary Campaigns pages
-│   │   │   ├── page.tsx       # Campaign list
-│   │   │   └── [id]/          # Individual campaign execution
-│   │   ├── scenario/          # Scenario execution pages
-│   │   └── api/               # API routes for script execution
-│   ├── components/            # Reusable UI components
-│   ├── lib/
-│   │   └── types.ts           # TypeScript types, scenarios, campaigns
-│   └── scenarios/             # PowerShell execution scripts
-│       ├── *.ps1              # Root-level atomic scripts
-│       ├── lockbit/           # LockBit threat actor scripts
-│       ├── blackbasta/        # Black Basta scripts
-│       ├── alphv/             # ALPHV/BlackCat scripts
-│       ├── clop/              # Cl0p scripts
-│       ├── dragonforce/       # DragonForce scripts
-│       ├── safepay/           # SafePay scripts
-│       ├── bianlian/          # BianLian scripts
-│       ├── avoslocker/        # AvosLocker scripts
-│       ├── conti/             # Conti scripts
-│       └── library/           # Generic discovery modules
-├── public/                     # Static assets
-├── package.json               # Dependencies and scripts
-├── tsconfig.json              # TypeScript configuration
-└── next.config.ts             # Next.js configuration
+├── app.py                      # Flask application (routes & API)
+├── data.py                     # Scenarios, campaigns, threat actor data
+├── requirements.txt            # Python dependencies (flask)
+├── templates/                  # Jinja2 HTML templates
+│   ├── base.html              # Base layout with sidebar
+│   ├── index.html             # Unified Threat Library dashboard
+│   ├── scenario.html          # Scenario execution page
+│   └── campaign.html          # Campaign execution page
+├── static/                     # Static assets
+│   ├── css/
+│   │   └── style.css          # Application styles
+│   └── js/
+│       └── app.js             # Client-side JavaScript
+└── scenarios/                  # PowerShell execution scripts
+    ├── *.ps1                  # Root-level atomic scripts
+    ├── lockbit/               # LockBit threat actor scripts
+    ├── blackbasta/            # Black Basta scripts
+    ├── alphv/                 # ALPHV/BlackCat scripts
+    ├── clop/                  # Cl0p scripts
+    ├── dragonforce/           # DragonForce scripts
+    ├── safepay/               # SafePay scripts
+    ├── bianlian/              # BianLian scripts
+    ├── avoslocker/            # AvosLocker scripts
+    ├── conti/                 # Conti scripts
+    ├── credential_access/     # Credential dumping scripts
+    ├── lateral_movement/      # Lateral movement scripts
+    ├── lolbin/                # LOLBin download scripts
+    ├── byovd/                 # BYOVD EDR bypass scripts
+    ├── wsl/                   # WSL-based attack scripts
+    └── library/               # Generic discovery modules
 ```
 
 ---
@@ -272,33 +240,24 @@ RTL/
 
 ### Common Issues
 
-#### Port 3000 Already in Use
+#### Port 5001 Already in Use
 
 ```bash
-# Find the process using port 3000
-lsof -i :3000
+# Find the process using port 5001
+lsof -i :5001
 
-# Kill the process or use a different port
-npm run dev -- -p 3001
+# Or change the port in app.py (last line)
+app.run(debug=True, host="0.0.0.0", port=5002)
 ```
 
-#### Node.js Version Mismatch
+#### Virtual Environment Issues
 
 ```bash
-# Check your Node version
-node --version
-
-# If using nvm, switch to the correct version
-nvm use 18
-```
-
-#### npm Install Fails
-
-```bash
-# Clear npm cache and retry
-npm cache clean --force
-rm -rf node_modules package-lock.json
-npm install
+# Recreate the virtual environment
+rm -rf venv
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 #### PowerShell Scripts Not Executing
@@ -315,6 +274,7 @@ npm install
 - **Access Denied**: Ensure Administrator privileges
 - **Network Errors**: Verify target IP/hostname is reachable
 - **LSASS Dump Fails**: Requires elevated privileges and may be blocked by EDR
+- **Timeout**: Scripts have a 120-second timeout — adjust in `app.py` if needed
 
 ---
 
