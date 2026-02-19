@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Red Team Lab{% endblock %}</title>
+    <meta name="description" content="Adversary Emulation & Breach Simulation">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Brand -->
+        <div class="sidebar-brand">
+            <span class="sidebar-logo">☠</span>
+            <a href="/" class="sidebar-logo-full">RED TEAM LAB</a>
+            <button class="sidebar-toggle" id="sidebarToggle" title="Collapse">«</button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <button class="sidebar-nav-item active" data-view="adversaries" title="ADVERSARIES">
+                <span class="sidebar-nav-icon">☠</span>
+                <span class="sidebar-nav-label">ADVERSARIES</span>
+            </button>
+            <button class="sidebar-nav-item" data-view="scenarios" title="SCENARIOS">
+                <span class="sidebar-nav-icon">⚡</span>
+                <span class="sidebar-nav-label">SCENARIOS</span>
+            </button>
+            <button class="sidebar-nav-item" data-view="campaigns" title="CAMPAIGNS">
+                <span class="sidebar-nav-icon">🎯</span>
+                <span class="sidebar-nav-label">CAMPAIGNS</span>
+            </button>
+        </nav>
+
+        <!-- Config Inputs -->
+        <div class="sidebar-config">
+            <div class="sidebar-config-group">
+                <label class="mono" for="targetIpInput">TARGET IP</label>
+                <input type="text" id="targetIpInput" class="mono" placeholder="127.0.0.1" value="127.0.0.1">
+                <span class="sidebar-config-error" id="ipError" style="display:none">Invalid IP</span>
+            </div>
+            <div class="sidebar-config-group">
+                <label class="mono" for="c2HostInput">C2 HOST</label>
+                <div class="sidebar-config-row">
+                    <input type="text" id="c2HostInput" class="mono" placeholder="evil.corp">
+                    <span class="sidebar-config-dot" id="c2Dot"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <span class="sidebar-footer-text">ADVERSARY EMULATION v2.0</span>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

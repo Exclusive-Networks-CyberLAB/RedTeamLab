@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}{{ campaign.name }} — Red Team Lab{% endblock %}
+
+{% block content %}
+<main class="scenario-container" style="animation: fadeIn 0.3s ease">
+    <a href="/" class="back-link">← Back to Threat Library</a>
+
+    <header class="scenario-header">
+        <div class="scenario-meta">
+            <span class="badge" style="color:var(--warning); border-color:var(--warning)">[{{ campaign.adversary
+                }}]</span>
+            <span class="mono text-dim">{{ campaign.steps|length }} PHASES</span>
+        </div>
+        <h1 class="mono text-primary glow-text" style="font-size:2rem; margin-bottom:0.5rem">{{ campaign.name }}</h1>
+        <p class="text-dim">{{ campaign.description }}</p>
+    </header>
+
+    <!-- Operations Chain -->
+    <section class="section-card" style="margin-bottom:2rem">
+        <h3>CAMPAIGN OPERATIONS CHAIN</h3>
+        <div style="display:grid; gap:0.5rem" id="stepsContainer">
+            {% for step in resolved_steps %}
+            <div class="accent-item campaign-step" id="step-{{ loop.index0 }}" style="border-left-color:var(--border)">
+                <span class="mono text-dim" style="margin-right:1rem">{{ loop.index }}.</span>
+                <span class="mono" style="color:var(--text-main)">{{ step.name }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <div class="scenario-controls">
+        <button class="btn" id="executeCampaignBtn" onclick="executeCampaign()">EXECUTE CAMPAIGN</button>
+    </div>
+
+    <!-- Terminal Console -->
+    <div class="console-terminal">
+        <div class="console-header">
+            <span class="console-dot" style="background:#ff5f56"></span>
+            <span class="console-dot" style="background:#ffbd2e"></span>
+            <span class="console-dot" style="background:#27c93f"></span>
+            <span class="console-title">root@kali:~/campaigns</span>
+        </div>
+        <div class="console-content" id="consoleOutput">
+            <div class="console-line"><span class="console-prompt">$ </span>Awaiting campaign launch...</div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const CAMPAIGN = {{ campaign| tojson }};
+    const RESOLVED_STEPS = {{ resolved_steps| tojson }};
+
+    function addLog(msg) {
+        const el = document.getElementById('consoleOutput');
+        const line = document.createElement('div');
+        line.className = 'console-line';
+        line.innerHTML = '<span class="console-prompt">$ </span>' + msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        el.appendChild(line);
+        el.scrollTop = el.scrollHeight;
+    }
+
+    function updateStep(index, status) {
+        const step = document.getElementById('step-' + index);
+        if (!step) return;
+
+        if (status === 'active') {
+            step.style.borderLeftColor = 'var(--primary)';
+            step.classList.add('active');
+            step.querySelector('span:last-child').style.color = 'var(--primary)';
+        } else if (status === 'done') {
+            step.style.borderLeftColor = '#ff6b35';
+            step.classList.remove('active');
+            step.querySelector('span:last-child').style.color = 'var(--text-main)';
+            // Add COMPLETED tag
+            if (!step.querySelector('.tag')) {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.style.cssText = 'float:right; background:rgba(255,107,53,0.2); color:#ff6b35; border-color:#ff6b35';
+                tag.textContent = 'COMPLETED';
+                step.appendChild(tag);
+            }
+        } else if (status === 'executing') {
+            const tag = document.createElement('span');
+            tag.className = 'tag step-executing-tag';
+            tag.style.cssText = 'float:right';
+            tag.textContent = 'EXECUTING';
+            step.appendChild(tag);
+        }
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function executeCampaign() {
+        const btn = document.getElementById('executeCampaignBtn');
+        btn.disabled = true;
+        btn.textContent = 'CAMPAIGN IN PROGRESS...';
+        btn.style.opacity = '0.5';
+
+        document.getElementById('consoleOutput').innerHTML = '';
+
+        const c2Host = localStorage.getItem('c2_host') || '';
+        const targetIp = localStorage.getItem('target_ip') || '127.0.0.1';
+
+        addLog('[INFO] Initializing Campaign: ' + CAMPAIGN.name);
+        addLog('[INFO] Target: ' + targetIp);
+        addLog('[INFO] C2: ' + c2Host);
+
+        // Dim pending steps
+        for (let i = 0; i < RESOLVED_STEPS.length; i++) {
+            document.getElementById('step-' + i).style.opacity = '0.5';
+        }
+
+        for (let i = 0; i < RESOLVED_STEPS.length; i++) {
+            const step = RESOLVED_STEPS[i];
+            const stepEl = document.getElementById('step-' + i);
+            stepEl.style.opacity = '1';
+
+            // Remove any previous executing tag
+            const oldTag = stepEl.querySelector('.step-executing-tag');
+            if (oldTag) oldTag.remove();
+
+            updateStep(i, 'active');
+            updateStep(i, 'executing');
+
+            addLog('');
+            addLog('[*] STEP ' + (i + 1) + '/' + RESOLVED_STEPS.length + ': ' + step.name + ' (' + (step.mitreTechniques ? step.mitreTechniques[0].id : '?') + ')...');
+
+            try {
+                const res = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        scriptPath: step.scriptPath,
+                        c2Host: c2Host,
+                        targetIp: targetIp
+                    })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    data.output.split('\n').filter(l => l).forEach(l => addLog(l));
+                } else {
+                    addLog('[ERROR] ' + data.error);
+                }
+            } catch (e) {
+                addLog('[ERROR] API Failure: ' + e);
+            }
+
+            // Remove executing tag, mark done
+            const execTag = stepEl.querySelector('.step-executing-tag');
+            if (execTag) execTag.remove();
+            updateStep(i, 'done');
+
+            if (i < RESOLVED_STEPS.length - 1) {
+                await sleep(2000);
+            }
+        }
+
+        addLog('');
+        addLog('[+] Campaign Execution Completed.');
+
+        btn.disabled = false;
+        btn.textContent = 'EXECUTE CAMPAIGN';
+        btn.style.opacity = '1';
+    }
+</script>
+{% endblock %}

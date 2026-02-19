@@ -1,0 +1,722 @@
+/* ==========================================================================
+   Red Team Lab — Combined Stylesheet
+   Merged from: globals.css, Sidebar.module.css, page.module.css,
+                Scenario.module.css, Console.module.css
+   ========================================================================== */
+
+/* ---------- CSS Variables & Base ---------- */
+
+:root {
+    --background: #050505;
+    --surface: #0a0a0a;
+    --surface-highlight: #121212;
+    --border: #333333;
+    --primary: #ff1a1a;
+    --primary-glow: rgba(255, 26, 26, 0.3);
+    --secondary: #ff8c00;
+    --secondary-glow: rgba(255, 140, 0, 0.3);
+    --danger: #ff3333;
+    --warning: #ffcc00;
+    --text-main: #eeeeee;
+    --text-dim: #888888;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Outfit', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ---------- Utilities ---------- */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.mono {
+    font-family: var(--font-mono);
+}
+
+.text-primary {
+    color: var(--primary);
+}
+
+.text-secondary {
+    color: var(--secondary);
+}
+
+.text-danger {
+    color: var(--danger);
+}
+
+.text-dim {
+    color: var(--text-dim);
+}
+
+.glow-text {
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+    transform: translateY(-2px);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 0.75rem 1.5rem;
+    font-family: var(--font-mono);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn:hover {
+    background: var(--primary);
+    color: var(--background);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-danger {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.btn-danger:hover {
+    background: var(--danger);
+    color: var(--background);
+    box-shadow: 0 0 20px rgba(255, 51, 51, 0.3);
+}
+
+/* ---------- Tags & Badges ---------- */
+
+.tag {
+    background: rgba(255, 26, 26, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(255, 26, 26, 0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+}
+
+/* ---------- Accent Items ---------- */
+
+.accent-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.75rem 1rem;
+    border-left: 2px solid var(--primary);
+    transition: all 0.2s ease;
+}
+
+.accent-item:hover {
+    background: rgba(255, 26, 26, 0.05);
+}
+
+.accent-item.active {
+    background: rgba(255, 26, 26, 0.1);
+    border-left-width: 3px;
+}
+
+/* ---------- Section Cards ---------- */
+
+.section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.section-card h3 {
+    font-family: var(--font-mono);
+    color: var(--primary);
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #333;
+}
+
+/* ---------- Grid Layout ---------- */
+
+.scenarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+/* ---------- Scrollbar ---------- */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    92% {
+        opacity: 1;
+    }
+
+    93% {
+        opacity: 0.7;
+    }
+
+    94% {
+        opacity: 1;
+    }
+
+    96% {
+        opacity: 0.9;
+    }
+
+    97% {
+        opacity: 1;
+    }
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ==========================================================================
+   SIDEBAR
+   ========================================================================== */
+
+.sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 50;
+    box-shadow: 1px 0 12px rgba(255, 26, 26, 0.05);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+    min-width: 60px;
+}
+
+/* Brand */
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    min-height: 60px;
+    position: relative;
+}
+
+.sidebar-logo {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    color: var(--primary);
+    text-shadow: 0 0 15px var(--primary), 0 0 30px rgba(255, 26, 26, 0.3);
+    letter-spacing: 2px;
+    animation: flicker 4s infinite;
+    flex-shrink: 0;
+    width: 36px;
+    text-align: center;
+}
+
+.sidebar-logo-full {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--primary);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s;
+    text-decoration: none;
+}
+
+.sidebar.collapsed .sidebar-logo-full {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem 0.4rem;
+    border-radius: 4px;
+    transition: all 0.3s;
+    line-height: 1;
+}
+
+.sidebar-toggle:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: 0 0 10px rgba(255, 26, 26, 0.3);
+}
+
+.sidebar.collapsed .sidebar-toggle {
+    position: static;
+    transform: none;
+    margin-left: auto;
+}
+
+/* Navigation */
+.sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 0;
+    gap: 2px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.sidebar-nav-item:hover {
+    color: var(--primary);
+    background: rgba(255, 26, 26, 0.04);
+    border-left-color: rgba(255, 26, 26, 0.3);
+}
+
+.sidebar-nav-item.active {
+    color: var(--primary);
+    background: rgba(255, 26, 26, 0.08);
+    border-left-color: var(--primary);
+    text-shadow: 0 0 8px rgba(255, 26, 26, 0.4);
+}
+
+.sidebar-nav-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+}
+
+.sidebar-nav-label {
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.sidebar.collapsed .sidebar-nav-label {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .sidebar-nav-item {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    border-left-width: 0;
+}
+
+.sidebar.collapsed .sidebar-nav-item.active {
+    background: rgba(255, 26, 26, 0.12);
+    border-left-width: 0;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* Config Section (C2 & Target IP) */
+.sidebar-config {
+    padding: 0.75rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.sidebar-config-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sidebar-config-group label {
+    font-size: 0.7rem;
+    color: var(--secondary);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.sidebar.collapsed .sidebar-config {
+    display: none;
+}
+
+.sidebar-config-group input {
+    background: var(--background);
+    border: 1px solid var(--border);
+    color: var(--primary);
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    outline: none;
+    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+.sidebar-config-group input:focus {
+    border-color: var(--primary);
+}
+
+.sidebar-config-group input.error {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.sidebar-config-error {
+    color: var(--danger);
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+}
+
+.sidebar-config-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.sidebar-config-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: all 0.3s;
+}
+
+/* Footer */
+.sidebar-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+.sidebar-footer-text {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: rgba(255, 26, 26, 0.3);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .sidebar-footer-text {
+    display: none;
+}
+
+/* ==========================================================================
+   MAIN CONTENT WRAPPER
+   ========================================================================== */
+
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   SCENARIO / CAMPAIGN DETAIL PAGES
+   ========================================================================== */
+
+.scenario-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.scenario-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+}
+
+.back-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.back-link:hover {
+    color: var(--primary);
+}
+
+.scenario-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.scenario-controls {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* ==========================================================================
+   CONSOLE / TERMINAL
+   ========================================================================== */
+
+.console-terminal {
+    background: #0e0e0e;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.console-header {
+    background: var(--surface-highlight);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.console-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.console-title {
+    margin-left: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.console-content {
+    padding: 1rem;
+    height: 400px;
+    overflow-y: auto;
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+
+.console-line {
+    margin-bottom: 0.25rem;
+    word-break: break-all;
+}
+
+.console-prompt {
+    color: var(--primary);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.console-cursor {
+    animation: blink 1s step-end infinite;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   TTP DETAIL (Threat Library Actor View)
+   ========================================================================== */
+
+.ttp-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-left: 2px solid var(--primary);
+    transition: all 0.2s ease;
+}
+
+.ttp-item.executed {
+    border-left-color: #ff6b35;
+}
+
+.ttp-code-block {
+    background: #000;
+    padding: 0.5rem;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #0f0;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+}
+
+.ttp-input-field {
+    width: 100%;
+    padding: 0.5rem;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+.ttp-input-field.error {
+    border-color: #ff3333;
+}
+
+.btn-execute {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.8rem;
+}
+
+.btn-revert {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.8rem;
+    background: #ff6b35;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-revert:hover {
+    background: #ff8c00;
+}
+
+.ttp-output {
+    margin-top: 1rem;
+    background: #111;
+    padding: 0.5rem;
+    border: 1px solid #333;
+}
+
+.ttp-output pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+.executed-badge {
+    background: #ff6b35;
+    color: #000;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.7rem;
+    font-weight: bold;
+    font-family: var(--font-mono);
+}

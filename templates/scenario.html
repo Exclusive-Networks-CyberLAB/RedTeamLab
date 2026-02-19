@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}{{ scenario.name }} — Red Team Lab{% endblock %}
+
+{% block content %}
+<main class="scenario-container" style="animation: fadeIn 0.3s ease">
+    <a href="/" class="back-link">← Back to Threat Library</a>
+
+    <header class="scenario-header">
+        <div class="scenario-meta">
+            <span class="badge" style="color:var(--secondary); border-color:var(--secondary)">[{{ scenario.adversary
+                }}]</span>
+            <span class="mono text-dim">{{ scenario.difficulty }}</span>
+            <span class="mono text-dim">{{ scenario.estimatedDuration }}</span>
+        </div>
+        <h1 class="mono text-primary glow-text" style="font-size:2rem; margin-bottom:0.5rem">{{ scenario.name }}</h1>
+        <p class="text-dim">{{ scenario.description }}</p>
+    </header>
+
+    <section class="section-card" style="margin-bottom:2rem">
+        <h3>MITRE ATT&CK MAPPING</h3>
+        <div style="display:grid; gap:0.5rem">
+            {% for t in scenario.mitreTechniques %}
+            <div class="accent-item">
+                <a href="{{ t.url }}" target="_blank" rel="noopener noreferrer" class="mono"
+                    style="color:var(--text-main); text-decoration:none">
+                    <span class="text-primary" style="margin-right:0.5rem">{{ t.id }}</span>
+                    {{ t.name }}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <div class="scenario-controls">
+        <button class="btn" id="executeBtn" onclick="executeScenario()">EXECUTE SCENARIO</button>
+    </div>
+
+    <!-- Terminal Console -->
+    <div class="console-terminal">
+        <div class="console-header">
+            <span class="console-dot" style="background:#ff5f56"></span>
+            <span class="console-dot" style="background:#ffbd2e"></span>
+            <span class="console-dot" style="background:#27c93f"></span>
+            <span class="console-title">root@kali:~/scenarios</span>
+        </div>
+        <div class="console-content" id="consoleOutput">
+            <div class="console-line"><span class="console-prompt">$ </span>Awaiting execution...</div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const SCENARIO = {{ scenario| tojson }};
+
+    function addLog(msg) {
+        const el = document.getElementById('consoleOutput');
+        const line = document.createElement('div');
+        line.className = 'console-line';
+        line.innerHTML = '<span class="console-prompt">$ </span>' + msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        el.appendChild(line);
+        el.scrollTop = el.scrollHeight;
+    }
+
+    function showCursor() {
+        const el = document.getElementById('consoleOutput');
+        let cursor = document.getElementById('blinkCursor');
+        if (!cursor) {
+            cursor = document.createElement('div');
+            cursor.id = 'blinkCursor';
+            cursor.className = 'console-line';
+            cursor.innerHTML = '<span class="console-cursor mono">_</span>';
+            el.appendChild(cursor);
+        }
+    }
+
+    function hideCursor() {
+        const c = document.getElementById('blinkCursor');
+        if (c) c.remove();
+    }
+
+    async function executeScenario() {
+        const btn = document.getElementById('executeBtn');
+        btn.disabled = true;
+        btn.textContent = 'EXECUTING...';
+        btn.style.opacity = '0.5';
+
+        document.getElementById('consoleOutput').innerHTML = '';
+
+        const c2Host = localStorage.getItem('c2_host') || '';
+        const targetIp = localStorage.getItem('target_ip') || '127.0.0.1';
+
+        if (!c2Host) addLog('[!] WARNING: No C2 Server set. Please configure in sidebar.');
+        addLog('[INFO] Initializing ' + SCENARIO.name + '...');
+        addLog('[INFO] Target: ' + targetIp);
+        addLog('[INFO] Adversary Infrastructure: ' + (c2Host || 'Unknown'));
+        showCursor();
+
+        try {
+            const res = await fetch('/api/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    scriptPath: SCENARIO.scriptPath,
+                    c2Host: c2Host,
+                    targetIp: targetIp
+                })
+            });
+            const data = await res.json();
+
+            hideCursor();
+
+            if (data.success) {
+                if (data.scriptContent) {
+                    addLog('[*] SCRIPT CONTENT EXECUTION PLAN:');
+                    addLog('----------------------------------------');
+                    data.scriptContent.split('\n').forEach(l => addLog(l));
+                    addLog('----------------------------------------');
+                }
+                data.output.split('\n').filter(l => l).forEach(l => addLog(l));
+                addLog('[+] Execution Completed Successfully.');
+            } else {
+                addLog('[ERROR] ' + data.error);
+            }
+        } catch (e) {
+            hideCursor();
+            addLog('[ERROR] Execution failed: ' + e);
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'EXECUTE SCENARIO';
+        btn.style.opacity = '1';
+    }
+</script>
+{% endblock %}
