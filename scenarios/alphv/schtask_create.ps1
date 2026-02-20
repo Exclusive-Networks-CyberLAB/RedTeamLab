@@ -1,49 +1,40 @@
 <#
 .SYNOPSIS
-    ALPHV Scheduled Task Persistence - DETECTION TRIGGER
+    ALPHV/BlackCat Scheduled Task Creation - DETECTION TRIGGER
 .DESCRIPTION
-    Creates scheduled task for persistence.
-    Will trigger EDR detection for T1053.005.
-    TTP: T1053, T1053.005
+    Creates a scheduled task for persistence/payload deployment.
+    TTP: T1053.005
 #>
-Write-Host "[*] Starting ALPHV Scheduled Task Persistence (T1053)" -ForegroundColor Cyan
-Write-Host "[*] This will trigger EDR detection for scheduled task creation" -ForegroundColor Yellow
+$ErrorActionPreference = "SilentlyContinue"
+Write-Host "[*] Starting ALPHV Scheduled Task Creation (T1053)" -ForegroundColor Cyan
 
-try {
-    $taskName = "RTL_Test_SchTask"
-    $taskAction = "cmd.exe"
-    $taskArgs = "/c echo RTL_Test > $env:TEMP\schtask_test.txt"
-    
-    Write-Host "[*] Task Name: $taskName"
-    Write-Host "[*] Action: $taskAction $taskArgs"
-    
-    # ACTUAL DETECTION TRIGGER - Create scheduled task
-    Write-Host "[*] Executing: schtasks /create /tn '$taskName' /tr '$taskAction $taskArgs' /sc ONLOGON /ru SYSTEM"
-    
-    # Try with SYSTEM (requires admin)
-    $result = schtasks /create /tn $taskName /tr "$taskAction $taskArgs" /sc ONLOGON /ru SYSTEM /f 2>&1
-    
-    if ($LASTEXITCODE -ne 0) {
-        # Fall back to current user
-        Write-Host "[*] SYSTEM task failed, trying current user..."
-        $result = schtasks /create /tn $taskName /tr "$taskAction $taskArgs" /sc ONLOGON /f 2>&1
-    }
-    
-    Write-Host "[*] Result: $result"
-    
-    # Verify creation
-    $verify = schtasks /query /tn $taskName 2>&1
-    
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "[+] SUCCESS: Scheduled task created" -ForegroundColor Green
-        Write-Host "[!] CrowdStrike should detect: 'ScheduledTaskCreated' or 'Persistence'" -ForegroundColor Magenta
-    } else {
-        Write-Host "[-] Task creation may have been blocked by EDR" -ForegroundColor Yellow
-    }
-    
-} catch {
-    Write-Host "[!] Error: $_" -ForegroundColor Red
-}
+# Step 1: Create scheduled task
+$taskName = "RTL_ALPHV_Update"
+$taskAction = "C:\Windows\System32\calc.exe"
 
-Write-Host "`n[*] Detection should appear in CrowdStrike within 1-2 minutes" -ForegroundColor Cyan
-Write-Host "[!] IMPORTANT: Run the REVERT script to remove the scheduled task!" -ForegroundColor Red
+Write-Host "`n[*] [T1053.005] Creating scheduled task for persistence..."
+Write-Host "    CMD: schtasks /create /sc once /tn `"$taskName`" /tr `"$taskAction`" /st 00:00 /ru SYSTEM /f"
+schtasks /create /sc once /tn $taskName /tr $taskAction /st 00:00 /ru SYSTEM /f 2>&1
+
+# Step 2: Verify task was created
+Write-Host "`n[*] Verifying scheduled task..."
+Write-Host "    CMD: schtasks /query /tn $taskName"
+schtasks /query /tn $taskName /fo LIST 2>&1 | ForEach-Object { Write-Host "    $_" }
+
+# Step 3: Run the task
+Write-Host "`n[*] Executing scheduled task..."
+Write-Host "    CMD: schtasks /run /tn $taskName"
+schtasks /run /tn $taskName 2>&1
+
+Start-Sleep -Seconds 2
+
+# Step 4: Create a second task mimicking GPO deployment
+$taskName2 = "RTL_ALPHV_GPO_Deploy"
+Write-Host "`n[*] [T1053.005] Creating GPO-style deployment task..."
+Write-Host "    CMD: schtasks /create /sc onlogon /tn `"$taskName2`" /tr `"cmd /c echo compromised`" /ru SYSTEM /f"
+schtasks /create /sc onlogon /tn $taskName2 /tr "cmd /c echo RTL_ALPHV_compromised > C:\temp\alphv_marker.txt" /ru SYSTEM /f 2>&1
+
+Write-Host "`n[+] Scheduled Task Creation Complete." -ForegroundColor Green
+Write-Host "[!] Tasks created: $taskName, $taskName2" -ForegroundColor Yellow
+Write-Host "[!] Check EDR for: schtasks.exe execution, SYSTEM-level task creation" -ForegroundColor Magenta
+Write-Host "[!] Run the REVERT script to clean up tasks" -ForegroundColor Yellow

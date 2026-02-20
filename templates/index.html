@@ -4,122 +4,105 @@
 {% block content %}
 <main class="container">
 
-    <!-- ===== ADVERSARIES VIEW ===== -->
-    <section id="view-adversaries" class="view-section active" style="animation: fadeIn 0.3s ease">
-        <header style="margin-bottom:2rem; border-bottom:1px solid #333; padding-bottom:1rem">
-            <h1 class="mono text-primary glow-text" style="font-size:2rem; margin-bottom:0.5rem">THREAT LIBRARY</h1>
-            <p class="text-dim mono">Adversary Profiles // Attributed TTPs</p>
-        </header>
+    <header style="margin-bottom:2rem; border-bottom:1px solid #333; padding-bottom:1rem">
+        <h1 class="mono text-primary glow-text" style="font-size:2rem; margin-bottom:0.5rem">THREAT LIBRARY</h1>
+        <p class="text-dim mono">All Threats // Adversaries • Scenarios • Campaigns</p>
+    </header>
 
-        <!-- Actor Grid -->
-        <div id="actorGrid" class="scenarios-grid">
-            {% for actor in threat_actors %}
-            <div class="card actor-card" data-actor-id="{{ actor.id }}" style="cursor:pointer; border:1px solid #333">
-                <div style="display:flex; justify-content:space-between; margin-bottom:1rem">
-                    <span class="mono text-primary" style="font-size:1.2rem">{{ actor.name }}</span>
-                </div>
-                <p class="text-dim" style="font-size:0.9rem; line-height:1.5">
-                    {{ actor.description[:100] }}...
-                </p>
-                <div style="margin-top:1rem; display:flex; gap:0.5rem">
-                    <span class="tag">{{ actor.ttps|length }} TTPs</span>
-                </div>
+    <!-- Unified Threat Grid -->
+    <div id="threatGrid" class="scenarios-grid">
+
+        <!-- Adversary / Threat Actor Cards -->
+        {% for actor in threat_actors %}
+        <div class="card actor-card" data-actor-id="{{ actor.id }}" style="cursor:pointer; border:1px solid #333">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+                <span class="mono text-primary" style="font-size:1.1rem">{{ actor.name }}</span>
+                <span class="type-badge type-adversary">ADVERSARY</span>
             </div>
-            {% endfor %}
-        </div>
-
-        <!-- Actor Detail (hidden by default) -->
-        <div id="actorDetail" style="display:none; animation: fadeIn 0.3s ease">
-            <button class="btn" id="backToLibrary" style="margin-bottom:1rem; padding:0.5rem 1rem">← BACK TO
-                LIBRARY</button>
-
-            <div class="card" style="border:1px solid var(--primary); box-shadow:0 0 15px rgba(255,26,26,0.1)">
-                <h1 class="mono text-primary" id="detailActorName" style="font-size:2rem; margin-bottom:0.5rem"></h1>
-                <p class="mono text-dim" id="detailActorAliases" style="margin-bottom:1rem"></p>
-                <p id="detailActorDesc" style="line-height:1.6; margin-bottom:2rem; font-size:1.1rem"></p>
-
-                <h3 class="mono" style="border-bottom:1px solid #333; padding-bottom:0.5rem; margin-bottom:1rem">
-                    ATTRIBUTED TTPs</h3>
-
-                <div id="detailTTPList" style="display:grid; gap:1rem"></div>
+            <p class="text-dim" style="font-size:0.9rem; line-height:1.5">
+                {{ actor.description[:100] }}...
+            </p>
+            <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap">
+                <span class="tag">{{ actor.ttps|length }} TTPs</span>
             </div>
         </div>
-    </section>
+        {% endfor %}
 
-    <!-- ===== SCENARIOS VIEW ===== -->
-    <section id="view-scenarios" class="view-section" style="display:none; animation: fadeIn 0.3s ease">
-        <header style="margin-bottom:2rem; border-bottom:1px solid #333; padding-bottom:1rem">
-            <h1 class="mono text-primary glow-text" style="font-size:2rem; margin-bottom:0.5rem">GUIDED SCENARIOS</h1>
-            <p class="text-dim mono">Atomic Attack Simulations // Individual TTPs</p>
-        </header>
-        <div class="scenarios-grid">
-            {% for scenario in scenarios %}
-            <div class="card" style="border:1px solid #333">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
-                    <span class="badge" style="color:var(--secondary); border-color:var(--secondary)">{{
-                        scenario.adversary }}</span>
-                    <span class="mono text-dim" style="font-size:0.8rem">{{ scenario.difficulty }}</span>
+        <!-- Scenario Cards -->
+        {% for scenario in scenarios %}
+        <div class="card" style="border:1px solid #333">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+                <span class="badge" style="color:var(--secondary); border-color:var(--secondary)">{{ scenario.adversary
+                    }}</span>
+                <span class="type-badge type-scenario">SCENARIO</span>
+            </div>
+            <h2 class="mono text-primary" style="font-size:1.1rem; margin-bottom:0.5rem">{{ scenario.name }}</h2>
+            <p class="text-dim" style="font-size:0.9rem; margin-bottom:1rem; line-height:1.5">
+                {{ scenario.description[:120] }}...
+            </p>
+            <div style="margin-bottom:1rem">
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+                    {% for tech in scenario.mitreTechniques %}
+                    <span class="tag" title="{{ tech.name }}">{{ tech.id }}</span>
+                    {% endfor %}
                 </div>
-                <h2 class="mono text-primary" style="font-size:1.2rem; margin-bottom:0.5rem">{{ scenario.name }}</h2>
-                <p class="text-dim" style="font-size:0.9rem; margin-bottom:1.5rem; line-height:1.5">
-                    {{ scenario.description[:120] }}...
-                </p>
-                <div style="margin-bottom:1.5rem">
-                    <p class="mono text-dim" style="font-size:0.75rem; margin-bottom:0.5rem">MITRE ATT&CK:</p>
-                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
-                        {% for tech in scenario.mitreTechniques %}
-                        <span class="tag" title="{{ tech.name }}">{{ tech.id }}</span>
-                        {% endfor %}
+            </div>
+            <a href="/scenario/{{ scenario.id }}" class="btn"
+                style="display:block; text-align:center; text-decoration:none">INITIALIZE</a>
+        </div>
+        {% endfor %}
+
+        <!-- Campaign Cards -->
+        {% for campaign in campaigns %}
+        <div class="card" style="border:1px solid #333">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+                <span class="badge" style="color:var(--warning); border-color:var(--warning)">{{ campaign.adversary
+                    }}</span>
+                <span class="type-badge type-campaign">CAMPAIGN</span>
+            </div>
+            <h2 class="mono text-primary" style="font-size:1.1rem; margin-bottom:0.5rem">{{ campaign.name }}</h2>
+            <p class="text-dim" style="font-size:0.9rem; margin-bottom:1rem; line-height:1.5; min-height:3em">
+                {{ campaign.description[:100] }}...
+            </p>
+            <div style="margin-bottom:1rem">
+                <p class="mono text-dim" style="font-size:0.75rem; margin-bottom:0.5rem">ATTACK CHAIN:</p>
+                <div style="display:grid; gap:0.25rem">
+                    {% for step in campaign.steps[:4] %}
+                    <div class="accent-item" style="padding:0.4rem 0.75rem; font-size:0.8rem">
+                        <span class="text-primary mono" style="margin-right:0.5rem">↓</span>
+                        <span class="mono text-dim">{{ step }}</span>
                     </div>
+                    {% endfor %}
+                    {% if campaign.steps|length > 4 %}
+                    <span class="mono text-dim" style="font-size:0.75rem; padding-left:0.75rem">
+                        +{{ campaign.steps|length - 4 }} more steps...
+                    </span>
+                    {% endif %}
                 </div>
-                <a href="/scenario/{{ scenario.id }}" class="btn"
-                    style="display:block; text-align:center; text-decoration:none">INITIALIZE</a>
             </div>
-            {% endfor %}
+            <a href="/campaign/{{ campaign.id }}" class="btn"
+                style="display:block; text-align:center; text-decoration:none">INITIATE CAMPAIGN</a>
         </div>
-    </section>
+        {% endfor %}
 
-    <!-- ===== CAMPAIGNS VIEW ===== -->
-    <section id="view-campaigns" class="view-section" style="display:none; animation: fadeIn 0.3s ease">
-        <header style="margin-bottom:2rem; border-bottom:1px solid #333; padding-bottom:1rem">
-            <h1 class="mono text-primary glow-text" style="font-size:2rem; margin-bottom:0.5rem">ADVERSARY CAMPAIGNS
-            </h1>
-            <p class="text-dim mono">End-to-End Attack Simulations // Multi-Stage TTPs</p>
-        </header>
-        <div class="scenarios-grid">
-            {% for campaign in campaigns %}
-            <div class="card" style="border:1px solid #333">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
-                    <span class="badge" style="color:var(--warning); border-color:var(--warning)">{{ campaign.adversary
-                        }}</span>
-                    <span class="mono text-dim" style="font-size:0.8rem">{{ campaign.steps|length }} STEPS</span>
-                </div>
-                <h2 class="mono text-primary" style="font-size:1.2rem; margin-bottom:0.5rem">{{ campaign.name }}</h2>
-                <p class="text-dim" style="font-size:0.9rem; margin-bottom:1.5rem; line-height:1.5; min-height:3em">
-                    {{ campaign.description[:100] }}...
-                </p>
-                <div style="margin-bottom:1.5rem">
-                    <p class="mono text-dim" style="font-size:0.75rem; margin-bottom:0.5rem">ATTACK CHAIN:</p>
-                    <div style="display:grid; gap:0.25rem">
-                        {% for step in campaign.steps[:4] %}
-                        <div class="accent-item" style="padding:0.4rem 0.75rem; font-size:0.8rem">
-                            <span class="text-primary mono" style="margin-right:0.5rem">↓</span>
-                            <span class="mono text-dim">{{ step }}</span>
-                        </div>
-                        {% endfor %}
-                        {% if campaign.steps|length > 4 %}
-                        <span class="mono text-dim" style="font-size:0.75rem; padding-left:0.75rem">
-                            +{{ campaign.steps|length - 4 }} more steps...
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
-                <a href="/campaign/{{ campaign.id }}" class="btn"
-                    style="display:block; text-align:center; text-decoration:none">INITIATE CAMPAIGN</a>
-            </div>
-            {% endfor %}
+    </div>
+
+    <!-- Actor Detail (hidden by default) -->
+    <div id="actorDetail" style="display:none; animation: fadeIn 0.3s ease">
+        <button class="btn" id="backToLibrary" style="margin-bottom:1rem; padding:0.5rem 1rem">← BACK TO
+            LIBRARY</button>
+
+        <div class="card" style="border:1px solid var(--primary); box-shadow:0 0 15px rgba(255,26,26,0.1)">
+            <h1 class="mono text-primary" id="detailActorName" style="font-size:2rem; margin-bottom:0.5rem"></h1>
+            <p class="mono text-dim" id="detailActorAliases" style="margin-bottom:1rem"></p>
+            <p id="detailActorDesc" style="line-height:1.6; margin-bottom:2rem; font-size:1.1rem"></p>
+
+            <h3 class="mono" style="border-bottom:1px solid #333; padding-bottom:0.5rem; margin-bottom:1rem">
+                ATTRIBUTED TTPs</h3>
+
+            <div id="detailTTPList" style="display:grid; gap:1rem"></div>
         </div>
-    </section>
+    </div>
 
 </main>
 

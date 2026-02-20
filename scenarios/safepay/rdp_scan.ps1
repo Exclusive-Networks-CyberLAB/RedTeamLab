@@ -2,66 +2,60 @@
 .SYNOPSIS
     SafePay RDP Scan - DETECTION TRIGGER
 .DESCRIPTION
-    Scans for RDP on target IP/subnet.
-    Will trigger EDR detection for T1133.
-    TTP: T1133
-.PARAMETER TargetIP
-    Target IP or subnet to scan (e.g., 10.0.0.1 or 10.0.0.0/24)
+    Scans for exposed RDP services on target network.
+    TTP: T1133, T1046
 #>
-param(
-    [Parameter(Mandatory=$false)]
-    [string]$TargetIP = "10.0.0.1"
-)
+$ErrorActionPreference = "SilentlyContinue"
+$TargetIP = if ($env:TARGET_IP) { $env:TARGET_IP } else { "192.168.1.0" }
 
 Write-Host "[*] Starting SafePay RDP Scan (T1133)" -ForegroundColor Cyan
-Write-Host "[*] Target: $TargetIP" -ForegroundColor Yellow
-Write-Host "[*] This will trigger EDR detection for network scanning" -ForegroundColor Yellow
+Write-Host "[!] Target: $TargetIP" -ForegroundColor Yellow
 
-try {
-    # Parse if it's a CIDR range or single IP
-    if ($TargetIP -match '/') {
-        # CIDR notation - scan range
-        $parts = $TargetIP -split '/'
-        $baseIP = $parts[0]
-        $cidr = [int]$parts[1]
-        
-        # Simple /24 scanning for demo
-        $ipParts = $baseIP -split '\.'
-        $targets = 1..10 | ForEach-Object { "$($ipParts[0]).$($ipParts[1]).$($ipParts[2]).$_" }
-        
-        Write-Host "[*] Scanning first 10 IPs of subnet..."
-    } else {
-        $targets = @($TargetIP)
-    }
-    
-    $openHosts = @()
-    
-    foreach ($target in $targets) {
-        Write-Host "[*] Scanning $target`:3389..."
-        
-        # ACTUAL DETECTION TRIGGER - Port scan
-        $result = Test-NetConnection -ComputerName $target -Port 3389 -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        
-        if ($result.TcpTestSucceeded) {
-            Write-Host "[+] OPEN: $target`:3389" -ForegroundColor Green
-            $openHosts += $target
-        } else {
-            Write-Host "[-] Closed: $target`:3389" -ForegroundColor Gray
-        }
-    }
-    
-    Write-Host "`n[*] Scan Summary:" -ForegroundColor Cyan
-    Write-Host "[*] Targets scanned: $($targets.Count)"
-    Write-Host "[*] Open RDP ports: $($openHosts.Count)"
-    
-    if ($openHosts.Count -gt 0) {
-        Write-Host "[+] Open hosts: $($openHosts -join ', ')" -ForegroundColor Green
-    }
-    
-    Write-Host "[!] CrowdStrike should detect: 'NetworkScanning' or 'PortScan'" -ForegroundColor Magenta
-    
-} catch {
-    Write-Host "[!] Error: $_" -ForegroundColor Red
+# Step 1: Single host RDP check
+Write-Host "`n[*] [T1133] Testing RDP on $TargetIP..."
+Write-Host "    CMD: Test-NetConnection -ComputerName $TargetIP -Port 3389"
+$result = Test-NetConnection -ComputerName $TargetIP -Port 3389 -WarningAction SilentlyContinue
+if ($result.TcpTestSucceeded) {
+    Write-Host "    [!] RDP is OPEN on $TargetIP" -ForegroundColor Red
+} else {
+    Write-Host "    [-] RDP closed on $TargetIP" -ForegroundColor Gray
 }
 
-Write-Host "`n[*] Detection should appear in CrowdStrike within 1-2 minutes" -ForegroundColor Cyan
+# Step 2: Scan common ports for other remote services
+Write-Host "`n[*] [T1046] Scanning remote access ports on $TargetIP..."
+$ports = @(
+    @{Port=22; Name="SSH"},
+    @{Port=3389; Name="RDP"},
+    @{Port=5900; Name="VNC"},
+    @{Port=5985; Name="WinRM"},
+    @{Port=5986; Name="WinRM-SSL"},
+    @{Port=445; Name="SMB"},
+    @{Port=135; Name="RPC"}
+)
+foreach ($p in $ports) {
+    $test = Test-NetConnection -ComputerName $TargetIP -Port $p.Port -WarningAction SilentlyContinue
+    if ($test.TcpTestSucceeded) {
+        Write-Host "    [+] $($p.Name) ($($p.Port)): OPEN" -ForegroundColor Green
+    } else {
+        Write-Host "    [-] $($p.Name) ($($p.Port)): Closed" -ForegroundColor Gray
+    }
+}
+
+# Step 3: Check local RDP configuration
+Write-Host "`n[*] [T1133] Checking local RDP configuration..."
+Write-Host "    CMD: Get-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server"
+try {
+    $rdpConfig = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -ErrorAction Stop
+    $rdpEnabled = if ($rdpConfig.fDenyTSConnections -eq 0) { "ENABLED" } else { "DISABLED" }
+    Write-Host "    [*] Local RDP: $rdpEnabled" -ForegroundColor Yellow
+} catch {
+    Write-Host "    [-] Cannot read RDP registry" -ForegroundColor Gray
+}
+
+# Step 4: Enumerate active RDP sessions
+Write-Host "`n[*] Enumerating RDP sessions..."
+Write-Host "    CMD: qwinsta"
+qwinsta 2>&1 | ForEach-Object { Write-Host "    $_" }
+
+Write-Host "`n[+] RDP Scan Complete." -ForegroundColor Green
+Write-Host "[!] Check EDR for: Port scanning, RDP enumeration, registry access" -ForegroundColor Magenta

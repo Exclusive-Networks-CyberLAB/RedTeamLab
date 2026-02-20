@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Continue"
-$DC_IP = "10.160.37.16"
+$DC_IP = if ($env:TARGET_IP) { $env:TARGET_IP } else { "192.168.1.10" }
 $PayloadSource = "C:\Windows\System32\calc.exe" # Using benign binary for test
 $PayloadDest = "\\$DC_IP\C$\Windows\Temp\lateral_test.exe"
 

@@ -6,7 +6,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
     initConfig();
-    initViewSwitching();
     initThreatLibrary();
 });
 
@@ -17,10 +16,20 @@ function initSidebar() {
     const toggle = document.getElementById('sidebarToggle');
     if (!sidebar || !toggle) return;
 
+    // Restore collapsed state from localStorage
+    const wasCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+    if (wasCollapsed) {
+        sidebar.classList.add('collapsed');
+        toggle.textContent = '»';
+        toggle.title = 'Expand';
+    }
+
     toggle.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
-        toggle.textContent = sidebar.classList.contains('collapsed') ? '»' : '«';
-        toggle.title = sidebar.classList.contains('collapsed') ? 'Expand' : 'Collapse';
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        toggle.textContent = isCollapsed ? '»' : '«';
+        toggle.title = isCollapsed ? 'Expand' : 'Collapse';
+        localStorage.setItem('sidebar_collapsed', isCollapsed);
     });
 }
 
@@ -74,41 +83,6 @@ function initConfig() {
     }
 }
 
-/* ---------- View Switching (Adversaries / Scenarios / Campaigns) ---------- */
-
-function initViewSwitching() {
-    const navItems = document.querySelectorAll('.sidebar-nav-item[data-view]');
-    if (!navItems.length) return;
-
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const view = item.dataset.view;
-
-            // Update nav active state
-            navItems.forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-
-            // Show/hide views
-            document.querySelectorAll('.view-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            const target = document.getElementById('view-' + view);
-            if (target) {
-                target.style.display = 'block';
-                target.style.animation = 'fadeIn 0.3s ease';
-            }
-
-            // Reset actor detail view when switching
-            if (view === 'adversaries') {
-                const grid = document.getElementById('actorGrid');
-                const detail = document.getElementById('actorDetail');
-                if (grid) grid.style.display = '';
-                if (detail) detail.style.display = 'none';
-            }
-        });
-    });
-}
-
 /* ---------- Threat Library (Actor Detail + TTP Execution) ---------- */
 
 function initThreatLibrary() {
@@ -128,7 +102,7 @@ function initThreatLibrary() {
     // Back button
     if (backBtn) {
         backBtn.addEventListener('click', () => {
-            document.getElementById('actorGrid').style.display = '';
+            document.getElementById('threatGrid').style.display = '';
             document.getElementById('actorDetail').style.display = 'none';
         });
     }
@@ -145,7 +119,7 @@ function showActorDetail(actorId) {
     const actor = window.THREAT_ACTORS.find(a => a.id === actorId);
     if (!actor) return;
 
-    document.getElementById('actorGrid').style.display = 'none';
+    document.getElementById('threatGrid').style.display = 'none';
     document.getElementById('actorDetail').style.display = 'block';
     document.getElementById('actorDetail').style.animation = 'fadeIn 0.3s ease';
 

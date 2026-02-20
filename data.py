@@ -31,7 +31,7 @@ SCENARIOS = [
         "id": "lateral-dc",
         "name": "Lateral Movement to Domain Controller",
         "adversary": "APT28",
-        "description": "Attempts to verify connectivity and simulate administrative share access to the DC (10.160.37.16).",
+        "description": "Attempts to verify connectivity and simulate administrative share access to the Domain Controller via SMB.",
         "mitreTechniques": [
             {"id": "T1021.002", "name": "Remote Services: SMB", "url": "https://attack.mitre.org/techniques/T1021/002/"}
         ],

@@ -298,6 +298,15 @@ body {
     position: relative;
 }
 
+.sidebar.collapsed .sidebar-brand {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 0.4rem;
+    justify-content: center;
+    align-items: center;
+    min-height: auto;
+}
+
 .sidebar-logo {
     font-family: var(--font-mono);
     font-size: 1.4rem;
@@ -353,7 +362,7 @@ body {
 .sidebar.collapsed .sidebar-toggle {
     position: static;
     transform: none;
-    margin-left: auto;
+    margin: 0 auto;
 }
 
 /* Navigation */
@@ -386,6 +395,7 @@ body {
     transition: all 0.25s;
     white-space: nowrap;
     text-align: left;
+    text-decoration: none;
 }
 
 .sidebar-nav-item:hover {
@@ -719,4 +729,42 @@ body {
     font-size: 0.7rem;
     font-weight: bold;
     font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   TYPE BADGES (Unified Threat Library)
+   ========================================================================== */
+
+.type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 3px;
+    border: 1px solid;
+    flex-shrink: 0;
+}
+
+.type-adversary {
+    color: #ff1a1a;
+    background: rgba(255, 26, 26, 0.15);
+    border-color: rgba(255, 26, 26, 0.4);
+    text-shadow: 0 0 6px rgba(255, 26, 26, 0.5);
+}
+
+.type-scenario {
+    color: #00e5ff;
+    background: rgba(0, 229, 255, 0.12);
+    border-color: rgba(0, 229, 255, 0.4);
+    text-shadow: 0 0 6px rgba(0, 229, 255, 0.5);
+}
+
+.type-campaign {
+    color: #ffc107;
+    background: rgba(255, 193, 7, 0.12);
+    border-color: rgba(255, 193, 7, 0.4);
+    text-shadow: 0 0 6px rgba(255, 193, 7, 0.5);
 }

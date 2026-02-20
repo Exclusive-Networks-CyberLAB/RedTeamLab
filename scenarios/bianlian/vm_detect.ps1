@@ -2,81 +2,74 @@
 .SYNOPSIS
     BianLian VM Detection - DETECTION TRIGGER
 .DESCRIPTION
-    Checks for virtualization indicators (sandbox evasion).
-    Will trigger EDR detection for T1497.
+    Detects virtualization/sandbox environments using WMI queries.
     TTP: T1497
 #>
-Write-Host "[*] Starting BianLian VM Detection (T1497)" -ForegroundColor Cyan
-Write-Host "[*] This will trigger EDR detection for evasion behavior" -ForegroundColor Yellow
+$ErrorActionPreference = "SilentlyContinue"
+Write-Host "[*] Starting BianLian VM/Sandbox Detection (T1497)" -ForegroundColor Cyan
 
-# ACTUAL DETECTION TRIGGER - VM/Sandbox detection queries
-$vmIndicators = @()
+# Step 1: WMI Computer System query
+Write-Host "`n[*] [T1497] Querying system manufacturer..."
+Write-Host "    CMD: Get-WmiObject Win32_ComputerSystem"
+$cs = Get-WmiObject Win32_ComputerSystem
+Write-Host "    [*] Manufacturer: $($cs.Manufacturer)" -ForegroundColor Yellow
+Write-Host "    [*] Model: $($cs.Model)" -ForegroundColor Yellow
+Write-Host "    [*] Total Memory: $([math]::Round($cs.TotalPhysicalMemory/1GB, 2)) GB"
 
-Write-Host "`n[*] Checking WMI for virtualization..." -ForegroundColor Yellow
-
-# Check BIOS
-try {
-    $bios = Get-WmiObject Win32_BIOS
-    Write-Host "[*] BIOS: $($bios.Manufacturer) - $($bios.SMBIOSBIOSVersion)"
-    if ($bios.Manufacturer -match "VMware|VirtualBox|Xen|QEMU|Hyper-V") {
-        $vmIndicators += "BIOS indicates VM"
+$vmIndicators = @("VMware", "VirtualBox", "Hyper-V", "QEMU", "Xen", "KVM", "Virtual")
+$isVM = $false
+foreach ($indicator in $vmIndicators) {
+    if ($cs.Manufacturer -match $indicator -or $cs.Model -match $indicator) {
+        Write-Host "    [!] VM DETECTED: $indicator" -ForegroundColor Red
+        $isVM = $true
     }
-} catch {
-    Write-Host "[-] Could not query BIOS" -ForegroundColor Gray
 }
 
-# Check Computer System
-try {
-    $cs = Get-WmiObject Win32_ComputerSystem
-    Write-Host "[*] Manufacturer: $($cs.Manufacturer)"
-    Write-Host "[*] Model: $($cs.Model)"
-    if ($cs.Model -match "VMware|VirtualBox|Virtual Machine|HVM") {
-        $vmIndicators += "Computer model indicates VM"
-    }
-} catch {
-    Write-Host "[-] Could not query ComputerSystem" -ForegroundColor Gray
-}
+# Step 2: Check BIOS for VM signatures
+Write-Host "`n[*] [T1497] Checking BIOS information..."
+Write-Host "    CMD: Get-WmiObject Win32_BIOS"
+$bios = Get-WmiObject Win32_BIOS
+Write-Host "    [*] BIOS Manufacturer: $($bios.Manufacturer)"
+Write-Host "    [*] BIOS Version: $($bios.SMBIOSBIOSVersion)"
+Write-Host "    [*] Serial: $($bios.SerialNumber)"
 
-# Check for VM-specific processes
+# Step 3: Check for VM tools processes
+Write-Host "`n[*] [T1497] Checking for VM tools processes..."
 $vmProcesses = @("vmtoolsd", "vmwaretray", "VBoxService", "VBoxTray", "xenservice")
-$runningVMProcs = Get-Process | Where-Object { $_.Name -in $vmProcesses }
-if ($runningVMProcs) {
-    $vmIndicators += "VM tools processes running"
-    Write-Host "[*] VM Processes found: $($runningVMProcs.Name -join ', ')"
+foreach ($proc in $vmProcesses) {
+    $found = Get-Process -Name $proc -ErrorAction SilentlyContinue
+    if ($found) {
+        Write-Host "    [!] VM Process found: $proc (PID: $($found.Id))" -ForegroundColor Red
+    }
 }
 
-# Check MAC address prefixes
-$macPrefixes = @("00:0C:29", "00:50:56", "00:1C:42", "08:00:27", "00:15:5D")
-$adapters = Get-NetAdapter | Where-Object { $_.Status -eq "Up" }
+# Step 4: Check disk size (VMs often have small disks)
+Write-Host "`n[*] [T1497] Checking disk size..."
+$disk = Get-WmiObject Win32_DiskDrive | Select-Object -First 1
+$diskSizeGB = [math]::Round($disk.Size / 1GB, 2)
+Write-Host "    [*] Primary disk: $diskSizeGB GB"
+if ($diskSizeGB -lt 60) {
+    Write-Host "    [!] Small disk detected - possible VM" -ForegroundColor Yellow
+}
+
+# Step 5: Check MAC address for VM vendor prefixes
+Write-Host "`n[*] [T1497] Checking network adapter MAC addresses..."
+$adapters = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object { $_.MACAddress }
+$vmMACs = @("00:0C:29", "00:50:56", "08:00:27", "00:1C:14", "00:15:5D")
 foreach ($adapter in $adapters) {
-    $mac = $adapter.MacAddress -replace '-', ':'
-    foreach ($prefix in $macPrefixes) {
-        if ($mac.StartsWith($prefix)) {
-            $vmIndicators += "VM MAC prefix detected: $mac"
+    $mac = $adapter.MACAddress
+    Write-Host "    [*] MAC: $mac ($($adapter.Description))"
+    foreach ($vmMAC in $vmMACs) {
+        if ($mac -like "$vmMAC*") {
+            Write-Host "    [!] VM MAC prefix detected: $vmMAC" -ForegroundColor Red
         }
     }
 }
 
-# Check registry for VM artifacts
-$vmRegKeys = @(
-    "HKLM:\SOFTWARE\VMware, Inc.\VMware Tools",
-    "HKLM:\SOFTWARE\Oracle\VirtualBox Guest Additions"
-)
-foreach ($key in $vmRegKeys) {
-    if (Test-Path $key) {
-        $vmIndicators += "VM registry key found: $key"
-    }
-}
-
-Write-Host "`n[*] VM Detection Summary:" -ForegroundColor Cyan
-if ($vmIndicators.Count -gt 0) {
-    Write-Host "[!] VIRTUAL MACHINE DETECTED" -ForegroundColor Red
-    foreach ($indicator in $vmIndicators) {
-        Write-Host "    - $indicator" -ForegroundColor Yellow
-    }
+Write-Host "`n[+] VM/Sandbox Detection Complete." -ForegroundColor Green
+if ($isVM) {
+    Write-Host "[!] RESULT: Running in a VIRTUAL environment" -ForegroundColor Red
 } else {
-    Write-Host "[+] No obvious VM indicators found (could be physical or well-hidden VM)" -ForegroundColor Green
+    Write-Host "[+] RESULT: Appears to be physical hardware" -ForegroundColor Green
 }
-
-Write-Host "`n[!] CrowdStrike may detect: 'SandboxEvasion' or 'VMDetection'" -ForegroundColor Magenta
-Write-Host "[*] VM detection completed" -ForegroundColor Cyan
+Write-Host "[!] Check EDR for: WMI enumeration queries, VM detection behavior" -ForegroundColor Magenta

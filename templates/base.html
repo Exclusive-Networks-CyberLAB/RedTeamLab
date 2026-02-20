@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,12 @@
     <meta name="description" content="Adversary Emulation & Breach Simulation">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
@@ -22,18 +26,10 @@
 
         <!-- Navigation -->
         <nav class="sidebar-nav">
-            <button class="sidebar-nav-item active" data-view="adversaries" title="ADVERSARIES">
-                <span class="sidebar-nav-icon">☠</span>
-                <span class="sidebar-nav-label">ADVERSARIES</span>
-            </button>
-            <button class="sidebar-nav-item" data-view="scenarios" title="SCENARIOS">
+            <a href="/" class="sidebar-nav-item active" title="THREAT LIBRARY">
                 <span class="sidebar-nav-icon">⚡</span>
-                <span class="sidebar-nav-label">SCENARIOS</span>
-            </button>
-            <button class="sidebar-nav-item" data-view="campaigns" title="CAMPAIGNS">
-                <span class="sidebar-nav-icon">🎯</span>
-                <span class="sidebar-nav-label">CAMPAIGNS</span>
-            </button>
+                <span class="sidebar-nav-label">THREAT LIBRARY</span>
+            </a>
         </nav>
 
         <!-- Config Inputs -->
@@ -66,4 +62,5 @@
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
+
 </html>

