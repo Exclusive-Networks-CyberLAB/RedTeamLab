@@ -6,6 +6,7 @@ SCENARIOS = [
         "id": "recon-local",
         "name": "Host Reconnaissance (PowerShell)",
         "adversary": "Red Team Ops",
+        "tactic": "Discovery",
         "description": "Enumerates local network connections and running processes to identify key assets.",
         "mitreTechniques": [
             {"id": "T1049", "name": "System Network Connections Discovery", "url": "https://attack.mitre.org/techniques/T1049/"},
@@ -19,6 +20,7 @@ SCENARIOS = [
         "id": "priv-esc",
         "name": "Privilege Escalation Check",
         "adversary": "APT28",
+        "tactic": "Privilege Escalation",
         "description": "Checks current privileges and simulates enabling SeDebugPrivilege.",
         "mitreTechniques": [
             {"id": "T1134", "name": "Access Token Manipulation", "url": "https://attack.mitre.org/techniques/T1134/"}
@@ -31,6 +33,7 @@ SCENARIOS = [
         "id": "lateral-dc",
         "name": "Lateral Movement to Domain Controller",
         "adversary": "APT28",
+        "tactic": "Lateral Movement",
         "description": "Attempts to verify connectivity and simulate administrative share access to the Domain Controller via SMB.",
         "mitreTechniques": [
             {"id": "T1021.002", "name": "Remote Services: SMB", "url": "https://attack.mitre.org/techniques/T1021/002/"}
@@ -43,6 +46,7 @@ SCENARIOS = [
         "id": "c2-check",
         "name": "C2 Connectivity Check",
         "adversary": "Scattered Spider",
+        "tactic": "Command and Control",
         "description": "Verifies DNS resolution and TCP connectivity to the configured C2 infrastructure.",
         "mitreTechniques": [
             {"id": "T1071", "name": "Application Layer Protocol", "url": "https://attack.mitre.org/techniques/T1071/"}
@@ -55,6 +59,7 @@ SCENARIOS = [
         "id": "persistence-reg",
         "name": "Persistence (Registry)",
         "adversary": "APT1",
+        "tactic": "Persistence",
         "description": "Creates a simulated malicious Run key in HKCU.",
         "mitreTechniques": [
             {"id": "T1547.001", "name": "Registry Run Keys", "url": "https://attack.mitre.org/techniques/T1547/001/"}
@@ -67,6 +72,7 @@ SCENARIOS = [
         "id": "defense-evasion",
         "name": "Defense Evasion (Clear Logs)",
         "adversary": "Red Team Ops",
+        "tactic": "Defense Evasion",
         "description": "Simulates clearing the Security Event Log.",
         "mitreTechniques": [
             {"id": "T1070.001", "name": "Indicator Removal: Clear Windows Event Logs", "url": "https://attack.mitre.org/techniques/T1070/001/"}
@@ -79,6 +85,7 @@ SCENARIOS = [
         "id": "cred-dump",
         "name": "Credential Dumping (Active)",
         "adversary": "APT1",
+        "tactic": "Credential Access",
         "description": "Simulates dumping LSASS memory using rundll32 and comsvcs.dll.",
         "mitreTechniques": [
             {"id": "T1003.001", "name": "OS Credential Dumping: LSASS Memory", "url": "https://attack.mitre.org/techniques/T1003/001/"}
@@ -91,6 +98,7 @@ SCENARIOS = [
         "id": "initial-access",
         "name": "Initial Access (Payload Staging)",
         "adversary": "APT45",
+        "tactic": "Initial Access",
         "description": "Simulates dropping a payload (output.wav) to C:\\temp for exfiltration.",
         "mitreTechniques": [
             {"id": "T1105", "name": "Ingress Tool Transfer", "url": "https://attack.mitre.org/techniques/T1105/"}
@@ -103,6 +111,7 @@ SCENARIOS = [
         "id": "exfil-dns",
         "name": "Exfiltration via DNS",
         "adversary": "APT45",
+        "tactic": "Exfiltration",
         "description": "Reads the staged payload and exfiltrates it via DNS A record queries.",
         "mitreTechniques": [
             {"id": "T1048.003", "name": "Exfiltration Over Alternative Protocol: DNS", "url": "https://attack.mitre.org/techniques/T1048/003/"}
@@ -116,6 +125,7 @@ SCENARIOS = [
         "id": "wsl-recon",
         "name": "WSL Reconnaissance & Enumeration",
         "adversary": "Red Team Ops",
+        "tactic": "Discovery",
         "description": "Executes Linux reconnaissance commands via WSL, accessing Windows filesystem through /mnt/c mount points.",
         "mitreTechniques": [
             {"id": "T1202", "name": "Indirect Command Execution", "url": "https://attack.mitre.org/techniques/T1202/"},
@@ -129,6 +139,7 @@ SCENARIOS = [
         "id": "wsl-defense-evasion",
         "name": "WSL Defense Evasion",
         "adversary": "Scattered Spider",
+        "tactic": "Defense Evasion",
         "description": "Uses wsl.exe to execute commands, bypassing Windows command-line logging and security controls.",
         "mitreTechniques": [
             {"id": "T1202", "name": "Indirect Command Execution", "url": "https://attack.mitre.org/techniques/T1202/"},
@@ -142,6 +153,7 @@ SCENARIOS = [
         "id": "wsl-reverse-shell",
         "name": "WSL Reverse Shell",
         "adversary": "APT28",
+        "tactic": "Execution",
         "description": "Establishes a reverse shell using bash and netcat from within WSL subsystem.",
         "mitreTechniques": [
             {"id": "T1059.004", "name": "Command and Scripting Interpreter: Unix Shell", "url": "https://attack.mitre.org/techniques/T1059/004/"}
@@ -154,6 +166,7 @@ SCENARIOS = [
         "id": "wsl-file-access",
         "name": "WSL File Access & Staging",
         "adversary": "APT1",
+        "tactic": "Collection",
         "description": "Accesses and stages Windows files via WSL mount points for collection and exfiltration.",
         "mitreTechniques": [
             {"id": "T1005", "name": "Data from Local System", "url": "https://attack.mitre.org/techniques/T1005/"},
@@ -167,6 +180,7 @@ SCENARIOS = [
         "id": "wsl-persistence",
         "name": "WSL Persistence (Cron)",
         "adversary": "Wizard Spider",
+        "tactic": "Persistence",
         "description": "Establishes persistence via cron jobs within WSL that execute when the subsystem is running.",
         "mitreTechniques": [
             {"id": "T1053.003", "name": "Scheduled Task/Job: Cron", "url": "https://attack.mitre.org/techniques/T1053/003/"}
@@ -179,6 +193,7 @@ SCENARIOS = [
         "id": "wsl-exfil",
         "name": "WSL Exfiltration (curl/wget)",
         "adversary": "APT45",
+        "tactic": "Exfiltration",
         "description": "Uses Linux tools (curl, wget, netcat) from WSL to exfiltrate data to C2 server.",
         "mitreTechniques": [
             {"id": "T1048", "name": "Exfiltration Over Alternative Protocol", "url": "https://attack.mitre.org/techniques/T1048/"},
@@ -193,6 +208,7 @@ SCENARIOS = [
         "id": "lolbin-certutil",
         "name": "LOLBin Download (certutil)",
         "adversary": "APT28",
+        "tactic": "Defense Evasion",
         "description": "Uses certutil.exe to download offensive tools from C2 server, triggering LOLBin detection rules.",
         "mitreTechniques": [
             {"id": "T1105", "name": "Ingress Tool Transfer", "url": "https://attack.mitre.org/techniques/T1105/"},
@@ -206,6 +222,7 @@ SCENARIOS = [
         "id": "lolbin-bitsadmin",
         "name": "LOLBin Download (bitsadmin)",
         "adversary": "APT1",
+        "tactic": "Defense Evasion",
         "description": "Creates BITS jobs to stealthily download tools from C2, disguised as Windows Update activity.",
         "mitreTechniques": [
             {"id": "T1197", "name": "BITS Jobs", "url": "https://attack.mitre.org/techniques/T1197/"},
@@ -219,6 +236,7 @@ SCENARIOS = [
         "id": "lolbin-mshta",
         "name": "LOLBin Execution (mshta)",
         "adversary": "Wizard Spider",
+        "tactic": "Defense Evasion",
         "description": "Uses mshta.exe for signed binary proxy execution of HTA payloads with embedded VBScript.",
         "mitreTechniques": [
             {"id": "T1218.005", "name": "Signed Binary Proxy Execution: Mshta", "url": "https://attack.mitre.org/techniques/T1218/005/"}
@@ -231,6 +249,7 @@ SCENARIOS = [
         "id": "lolbin-powershell-cradle",
         "name": "PowerShell Download Cradles",
         "adversary": "Scattered Spider",
+        "tactic": "Execution",
         "description": "Demonstrates multiple PowerShell download methods: IWR, WebClient, DownloadString, and BITS Transfer.",
         "mitreTechniques": [
             {"id": "T1059.001", "name": "PowerShell", "url": "https://attack.mitre.org/techniques/T1059/001/"},
@@ -245,6 +264,7 @@ SCENARIOS = [
         "id": "cred-mimikatz",
         "name": "Mimikatz Credential Dump",
         "adversary": "APT28",
+        "tactic": "Credential Access",
         "description": "Downloads and executes Mimikatz for sekurlsa::logonpasswords, lsadump::cache, and Kerberos ticket extraction.",
         "mitreTechniques": [
             {"id": "T1003.001", "name": "OS Credential Dumping: LSASS Memory", "url": "https://attack.mitre.org/techniques/T1003/001/"},
@@ -258,6 +278,7 @@ SCENARIOS = [
         "id": "cred-comsvcs-lsass",
         "name": "LSASS Dump (comsvcs.dll)",
         "adversary": "Red Team Ops",
+        "tactic": "Credential Access",
         "description": "Uses native comsvcs.dll MiniDump via rundll32 to dump LSASS memory - no external tools required.",
         "mitreTechniques": [
             {"id": "T1003.001", "name": "OS Credential Dumping: LSASS Memory", "url": "https://attack.mitre.org/techniques/T1003/001/"}
@@ -270,6 +291,7 @@ SCENARIOS = [
         "id": "cred-sam-extract",
         "name": "SAM/SYSTEM Registry Extraction",
         "adversary": "APT1",
+        "tactic": "Credential Access",
         "description": "Extracts SAM, SYSTEM, and SECURITY registry hives for offline credential cracking with secretsdump.",
         "mitreTechniques": [
             {"id": "T1003.002", "name": "OS Credential Dumping: SAM", "url": "https://attack.mitre.org/techniques/T1003/002/"}
@@ -282,6 +304,7 @@ SCENARIOS = [
         "id": "cred-procdump-lsass",
         "name": "LSASS Dump (Procdump)",
         "adversary": "APT45",
+        "tactic": "Credential Access",
         "description": "Uses Microsoft-signed Sysinternals Procdump to create a full memory dump of LSASS process.",
         "mitreTechniques": [
             {"id": "T1003.001", "name": "OS Credential Dumping: LSASS Memory", "url": "https://attack.mitre.org/techniques/T1003/001/"},
@@ -296,6 +319,7 @@ SCENARIOS = [
         "id": "lateral-psexec",
         "name": "PsExec Remote Execution",
         "adversary": "APT28",
+        "tactic": "Lateral Movement",
         "description": "Downloads PsExec and executes commands remotely via SMB service creation (PSEXESVC).",
         "mitreTechniques": [
             {"id": "T1569.002", "name": "System Services: Service Execution", "url": "https://attack.mitre.org/techniques/T1569/002/"},
@@ -309,6 +333,7 @@ SCENARIOS = [
         "id": "lateral-wmi",
         "name": "WMI Remote Execution",
         "adversary": "Red Team Ops",
+        "tactic": "Lateral Movement",
         "description": "Uses native WMI for remote process creation and system enumeration - no external tools needed.",
         "mitreTechniques": [
             {"id": "T1047", "name": "Windows Management Instrumentation", "url": "https://attack.mitre.org/techniques/T1047/"}
@@ -321,6 +346,7 @@ SCENARIOS = [
         "id": "lateral-pth",
         "name": "Pass-the-Hash Attack",
         "adversary": "Scattered Spider",
+        "tactic": "Lateral Movement",
         "description": "Uses Mimikatz sekurlsa::pth to authenticate with extracted NTLM hashes for lateral movement.",
         "mitreTechniques": [
             {"id": "T1550.002", "name": "Pass the Hash", "url": "https://attack.mitre.org/techniques/T1550/002/"},
@@ -334,6 +360,7 @@ SCENARIOS = [
         "id": "lateral-smb",
         "name": "SMB Admin Share Lateral",
         "adversary": "Wizard Spider",
+        "tactic": "Lateral Movement",
         "description": "Accesses C$/ADMIN$ shares, copies payloads, and schedules remote execution via schtasks.",
         "mitreTechniques": [
             {"id": "T1021.002", "name": "Remote Services: SMB", "url": "https://attack.mitre.org/techniques/T1021/002/"},
@@ -349,6 +376,7 @@ SCENARIOS = [
         "id": "byovd-rtcore",
         "name": "BYOVD: RTCore64 EDR Kill",
         "adversary": "Wizard Spider",
+        "tactic": "Defense Evasion",
         "description": "Loads vulnerable MSI Afterburner driver (CVE-2019-16098) for kernel-level EDR callback removal.",
         "mitreTechniques": [
             {"id": "T1562.001", "name": "Impair Defenses: Disable or Modify Tools", "url": "https://attack.mitre.org/techniques/T1562/001/"},
@@ -362,6 +390,7 @@ SCENARIOS = [
         "id": "byovd-dbutil",
         "name": "BYOVD: Dell dbutil Exploit",
         "adversary": "APT45",
+        "tactic": "Defense Evasion",
         "description": "Uses Dell dbutil_2_3.sys (CVE-2021-21551) for kernel R/W - attributed to Lazarus APT group.",
         "mitreTechniques": [
             {"id": "T1562.001", "name": "Impair Defenses: Disable or Modify Tools", "url": "https://attack.mitre.org/techniques/T1562/001/"},
@@ -375,6 +404,7 @@ SCENARIOS = [
         "id": "byovd-terminator",
         "name": "Terminator EDR Kill",
         "adversary": "Scattered Spider",
+        "tactic": "Defense Evasion",
         "description": "Uses Terminator BYOVD tool to enumerate and terminate EDR processes via signed kernel driver abuse.",
         "mitreTechniques": [
             {"id": "T1562.001", "name": "Impair Defenses: Disable or Modify Tools", "url": "https://attack.mitre.org/techniques/T1562/001/"},
@@ -388,6 +418,7 @@ SCENARIOS = [
         "id": "edr-process-kill",
         "name": "Multi-Method EDR Disable",
         "adversary": "Red Team Ops",
+        "tactic": "Defense Evasion",
         "description": "Attempts to disable EDR via PowerShell, service stops, taskkill, registry, and AMSI bypass.",
         "mitreTechniques": [
             {"id": "T1562.001", "name": "Impair Defenses: Disable or Modify Tools", "url": "https://attack.mitre.org/techniques/T1562/001/"},

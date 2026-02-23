@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
     initConfig();
     initThreatLibrary();
+    initFilters();
 });
 
 /* ---------- Sidebar Toggle ---------- */
@@ -108,10 +109,66 @@ function initThreatLibrary() {
     }
 }
 
+/* ---------- Threat Library Filters ---------- */
+
+function initFilters() {
+    const tidInput = document.getElementById('filterTID');
+    const tacticSelect = document.getElementById('filterTactic');
+    const resetBtn = document.getElementById('filterReset');
+    const countEl = document.getElementById('filterCount');
+
+    if (!tidInput || !tacticSelect) return;
+
+    function applyFilters() {
+        const tidQuery = tidInput.value.trim().toUpperCase();
+        const tacticQuery = tacticSelect.value;
+        const cards = document.querySelectorAll('#threatGrid > .card');
+        let visible = 0;
+        let total = cards.length;
+
+        cards.forEach(card => {
+            const tids = (card.dataset.tids || '').toUpperCase();
+            const tactics = (card.dataset.tactics || '');
+            let show = true;
+
+            // TID filter
+            if (tidQuery) {
+                const terms = tidQuery.split(/[,\s]+/).filter(t => t);
+                show = terms.some(term => tids.includes(term));
+            }
+
+            // Tactic filter
+            if (show && tacticQuery) {
+                show = tactics.includes(tacticQuery);
+            }
+
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        // Update count
+        if (tidQuery || tacticQuery) {
+            countEl.textContent = `${visible} / ${total} shown`;
+        } else {
+            countEl.textContent = '';
+        }
+    }
+
+    tidInput.addEventListener('input', applyFilters);
+    tacticSelect.addEventListener('change', applyFilters);
+
+    resetBtn.addEventListener('click', () => {
+        tidInput.value = '';
+        tacticSelect.value = '';
+        applyFilters();
+    });
+}
+
 // Track executed TTPs and their outputs
 const executedTTPs = new Set();
 const ttpOutputs = {};
 const ttpInputValues = {};
+const ttpWordLauncher = {};  // Per-TTP phishing delivery toggle state
 
 function showActorDetail(actorId) {
     if (!window.THREAT_ACTORS) return;
@@ -158,10 +215,20 @@ function showActorDetail(actorId) {
             inputHTML += '</div>';
         }
 
-        let buttonsHTML = '<div style="display:flex; gap:0.5rem; flex-wrap:wrap">';
+        let buttonsHTML = '<div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center">';
         if (ttp.scriptPath) {
+            // Phishing delivery toggle
+            const isWordLauncher = ttpWordLauncher[ttp.id] || false;
+            buttonsHTML += `
+                <label class="phishing-toggle" title="Wrap this TTP in a Word macro delivery chain (WINWORD.EXE → cmd.exe → PowerShell)">
+                    <input type="checkbox" id="word-toggle-${ttp.id}"
+                           ${isWordLauncher ? 'checked' : ''}
+                           onchange="toggleWordLauncher('${ttp.id}', this.checked)">
+                    <span class="phishing-slider"></span>
+                    <span class="phishing-label mono">📧 PHISHING DELIVERY</span>
+                </label>`;
             buttonsHTML += `<button class="btn btn-execute" id="exec-btn-${ttp.id}"
-                             onclick="executeTTP('${actorId}', '${ttp.id}')">EXECUTE</button>`;
+                             onclick="executeTTP('${actorId}', '${ttp.id}')">${isWordLauncher ? '📄 EXECUTE VIA WORD' : 'EXECUTE'}</button>`;
         }
         if (ttp.revertScriptPath && isExecuted) {
             buttonsHTML += `<button class="btn-revert" id="revert-btn-${ttp.id}"
@@ -261,11 +328,18 @@ async function executeTTP(actorId, ttpId) {
         });
     }
 
+    // Check if word launcher is active for this TTP
+    const useWordLauncher = ttpWordLauncher[ttpId] || false;
+
     try {
         const res = await fetch('/api/execute', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ scriptPath: ttp.scriptPath, params })
+            body: JSON.stringify({
+                scriptPath: ttp.scriptPath,
+                params,
+                useWordLauncher: useWordLauncher
+            })
         });
         const data = await res.json();
         ttpOutputs[ttpId] = data.output || data.error;
@@ -308,4 +382,21 @@ async function revertTTP(actorId, ttpId) {
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function toggleWordLauncher(ttpId, enabled) {
+    ttpWordLauncher[ttpId] = enabled;
+    // Update button text
+    const btn = document.getElementById('exec-btn-' + ttpId);
+    if (btn) {
+        btn.textContent = enabled ? '📄 EXECUTE VIA WORD' : 'EXECUTE';
+    }
+    // Update the toggle label visual
+    const toggle = document.getElementById('word-toggle-' + ttpId);
+    if (toggle) {
+        const label = toggle.closest('.phishing-toggle');
+        if (label) {
+            label.classList.toggle('active', enabled);
+        }
+    }
 }

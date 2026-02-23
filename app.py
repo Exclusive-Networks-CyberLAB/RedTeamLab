@@ -72,6 +72,7 @@ def api_execute():
         c2_host = body.get("c2Host", "127.0.0.1")
         target_ip = body.get("targetIp", "192.168.1.10")
         params = body.get("params", {})
+        use_word_launcher = body.get("useWordLauncher", False)
 
         if not script_path:
             return jsonify({"error": "No script path provided"}), 400
@@ -83,8 +84,17 @@ def api_execute():
 
         full_path = os.path.join(os.getcwd(), safe_path)
 
-        # Build parameter string for PowerShell
-        param_string = ""
+        # Word Macro Launcher wrapper
+        if use_word_launcher:
+            launcher_path = os.path.join(
+                os.getcwd(), "scenarios", "launchers", "word_macro_launcher.ps1"
+            )
+            param_string = f' -TargetScript "{full_path}"'
+            full_path = launcher_path
+        else:
+            # Build parameter string for PowerShell
+            param_string = ""
+
         if isinstance(params, dict):
             for key, value in params.items():
                 if value and isinstance(value, str):

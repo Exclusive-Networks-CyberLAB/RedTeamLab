@@ -4,17 +4,48 @@
 {% block content %}
 <main class="container">
 
-    <header style="margin-bottom:2rem; border-bottom:1px solid #333; padding-bottom:1rem">
+    <header style="margin-bottom:1.5rem; border-bottom:1px solid #333; padding-bottom:1rem">
         <h1 class="mono text-primary glow-text" style="font-size:2rem; margin-bottom:0.5rem">THREAT LIBRARY</h1>
         <p class="text-dim mono">All Threats // Adversaries • Scenarios • Campaigns</p>
     </header>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar" id="filterBar">
+        <div class="filter-group">
+            <label class="mono filter-label" for="filterTID">🔍 MITRE TID</label>
+            <input type="text" id="filterTID" class="filter-input mono" placeholder="e.g. T1105, T1059...">
+        </div>
+        <div class="filter-group">
+            <label class="mono filter-label" for="filterTactic">⚔ TACTIC</label>
+            <select id="filterTactic" class="filter-select mono">
+                <option value="">All Tactics</option>
+                <option value="Initial Access">Initial Access</option>
+                <option value="Execution">Execution</option>
+                <option value="Persistence">Persistence</option>
+                <option value="Privilege Escalation">Privilege Escalation</option>
+                <option value="Defense Evasion">Defense Evasion</option>
+                <option value="Credential Access">Credential Access</option>
+                <option value="Discovery">Discovery</option>
+                <option value="Lateral Movement">Lateral Movement</option>
+                <option value="Collection">Collection</option>
+                <option value="Command and Control">Command and Control</option>
+                <option value="Exfiltration">Exfiltration</option>
+                <option value="Impact">Impact</option>
+            </select>
+        </div>
+        <button class="btn filter-reset" id="filterReset" title="Clear Filters">✕ RESET</button>
+        <span class="mono text-dim filter-count" id="filterCount"></span>
+    </div>
 
     <!-- Unified Threat Grid -->
     <div id="threatGrid" class="scenarios-grid">
 
         <!-- Adversary / Threat Actor Cards -->
         {% for actor in threat_actors %}
-        <div class="card actor-card" data-actor-id="{{ actor.id }}" style="cursor:pointer; border:1px solid #333">
+        <div class="card actor-card" data-actor-id="{{ actor.id }}" data-card-type="adversary"
+            data-tids="{{ actor.ttps | map(attribute='id') | join(' ') }}"
+            data-tactics="{{ actor.ttps | map(attribute='tactic') | unique | join(' | ') }}"
+            style="cursor:pointer; border:1px solid #333">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
                 <span class="mono text-primary" style="font-size:1.1rem">{{ actor.name }}</span>
                 <span class="type-badge type-adversary">ADVERSARY</span>
@@ -30,11 +61,16 @@
 
         <!-- Scenario Cards -->
         {% for scenario in scenarios %}
-        <div class="card" style="border:1px solid #333">
+        <div class="card" data-card-type="scenario"
+            data-tids="{{ scenario.mitreTechniques | map(attribute='id') | join(' ') }}"
+            data-tactics="{{ scenario.tactic }}" style="border:1px solid #333">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
                 <span class="badge" style="color:var(--secondary); border-color:var(--secondary)">{{ scenario.adversary
                     }}</span>
-                <span class="type-badge type-scenario">SCENARIO</span>
+                <div style="display:flex; gap:0.5rem; align-items:center">
+                    <span class="tactic-tag">{{ scenario.tactic }}</span>
+                    <span class="type-badge type-scenario">SCENARIO</span>
+                </div>
             </div>
             <h2 class="mono text-primary" style="font-size:1.1rem; margin-bottom:0.5rem">{{ scenario.name }}</h2>
             <p class="text-dim" style="font-size:0.9rem; margin-bottom:1rem; line-height:1.5">
@@ -54,7 +90,8 @@
 
         <!-- Campaign Cards -->
         {% for campaign in campaigns %}
-        <div class="card" style="border:1px solid #333">
+        <div class="card" data-card-type="campaign" data-tids="{{ campaign.steps | join(' ') }}" data-tactics=""
+            style="border:1px solid #333">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
                 <span class="badge" style="color:var(--warning); border-color:var(--warning)">{{ campaign.adversary
                     }}</span>
