@@ -168,7 +168,20 @@ function initFilters() {
 const executedTTPs = new Set();
 const ttpOutputs = {};
 const ttpInputValues = {};
-const ttpWordLauncher = {};  // Per-TTP phishing delivery toggle state
+const ttpParentProcess = {};  // Per-TTP parent process selection
+
+const PARENT_PROCESS_OPTIONS = [
+    { value: '', label: 'Direct Execution (No Parent)', icon: '' },
+    { value: 'WINWORD', label: 'WINWORD.EXE — Word Macro', icon: '📄' },
+    { value: 'EXCEL', label: 'EXCEL.EXE — Excel Macro', icon: '📊' },
+    { value: 'OUTLOOK', label: 'OUTLOOK.EXE — Email Client', icon: '📧' },
+    { value: 'calc', label: 'calc.exe — Process Hollowing', icon: '🧮' },
+    { value: 'notepad', label: 'notepad.exe — Process Injection', icon: '📝' },
+    { value: 'explorer', label: 'explorer.exe — Trusted Parent', icon: '📁' },
+    { value: 'mshta', label: 'mshta.exe — HTA Proxy Exec', icon: '⚡' },
+    { value: 'rundll32', label: 'rundll32.exe — DLL Proxy', icon: '🔧' },
+    { value: 'svchost', label: 'svchost.exe — Service Host', icon: '⚙️' }
+];
 
 function showActorDetail(actorId) {
     if (!window.THREAT_ACTORS) return;
@@ -217,18 +230,26 @@ function showActorDetail(actorId) {
 
         let buttonsHTML = '<div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center">';
         if (ttp.scriptPath) {
-            // Phishing delivery toggle
-            const isWordLauncher = ttpWordLauncher[ttp.id] || false;
+            // Parent process dropdown
+            const selectedParent = ttpParentProcess[ttp.id] || '';
+            let optionsHTML = PARENT_PROCESS_OPTIONS.map(opt => {
+                const selected = opt.value === selectedParent ? 'selected' : '';
+                const label = opt.icon ? opt.icon + ' ' + opt.label : opt.label;
+                return `<option value="${opt.value}" ${selected}>${label}</option>`;
+            }).join('');
             buttonsHTML += `
-                <label class="phishing-toggle" title="Wrap this TTP in a Word macro delivery chain (WINWORD.EXE → cmd.exe → PowerShell)">
-                    <input type="checkbox" id="word-toggle-${ttp.id}"
-                           ${isWordLauncher ? 'checked' : ''}
-                           onchange="toggleWordLauncher('${ttp.id}', this.checked)">
-                    <span class="phishing-slider"></span>
-                    <span class="phishing-label mono">📧 PHISHING DELIVERY</span>
-                </label>`;
+                <div class="parent-process-selector" title="Select parent process to spoof (PPID Spoofing)">
+                    <label class="mono parent-label">🔗 PARENT PROCESS</label>
+                    <select class="parent-select mono" id="parent-select-${ttp.id}"
+                            onchange="setParentProcess('${ttp.id}', this.value)">
+                        ${optionsHTML}
+                    </select>
+                </div>`;
+            const btnLabel = selectedParent
+                ? PARENT_PROCESS_OPTIONS.find(o => o.value === selectedParent).icon + ' EXECUTE VIA ' + selectedParent.toUpperCase()
+                : 'EXECUTE';
             buttonsHTML += `<button class="btn btn-execute" id="exec-btn-${ttp.id}"
-                             onclick="executeTTP('${actorId}', '${ttp.id}')">${isWordLauncher ? '📄 EXECUTE VIA WORD' : 'EXECUTE'}</button>`;
+                             onclick="executeTTP('${actorId}', '${ttp.id}')">${btnLabel}</button>`;
         }
         if (ttp.revertScriptPath && isExecuted) {
             buttonsHTML += `<button class="btn-revert" id="revert-btn-${ttp.id}"
@@ -328,8 +349,8 @@ async function executeTTP(actorId, ttpId) {
         });
     }
 
-    // Check if word launcher is active for this TTP
-    const useWordLauncher = ttpWordLauncher[ttpId] || false;
+    // Check parent process selection for this TTP
+    const parentProcess = ttpParentProcess[ttpId] || '';
 
     try {
         const res = await fetch('/api/execute', {
@@ -338,7 +359,7 @@ async function executeTTP(actorId, ttpId) {
             body: JSON.stringify({
                 scriptPath: ttp.scriptPath,
                 params,
-                useWordLauncher: useWordLauncher
+                parentProcess: parentProcess
             })
         });
         const data = await res.json();
@@ -384,19 +405,15 @@ function escapeHtml(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function toggleWordLauncher(ttpId, enabled) {
-    ttpWordLauncher[ttpId] = enabled;
-    // Update button text
+function setParentProcess(ttpId, value) {
+    ttpParentProcess[ttpId] = value;
     const btn = document.getElementById('exec-btn-' + ttpId);
     if (btn) {
-        btn.textContent = enabled ? '📄 EXECUTE VIA WORD' : 'EXECUTE';
-    }
-    // Update the toggle label visual
-    const toggle = document.getElementById('word-toggle-' + ttpId);
-    if (toggle) {
-        const label = toggle.closest('.phishing-toggle');
-        if (label) {
-            label.classList.toggle('active', enabled);
+        if (value) {
+            const opt = PARENT_PROCESS_OPTIONS.find(o => o.value === value);
+            btn.textContent = (opt ? opt.icon + ' ' : '') + 'EXECUTE VIA ' + value.toUpperCase();
+        } else {
+            btn.textContent = 'EXECUTE';
         }
     }
 }

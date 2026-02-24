@@ -872,78 +872,53 @@ body {
 }
 
 /* ==========================================================================
-   PHISHING DELIVERY TOGGLE
+   PARENT PROCESS SELECTOR
    ========================================================================== */
 
-.phishing-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    padding: 0.25rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.02);
-    transition: all 0.3s ease;
-    user-select: none;
+.parent-process-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
-.phishing-toggle:hover {
-    border-color: var(--secondary);
-    background: rgba(255, 140, 0, 0.05);
-}
-
-.phishing-toggle.active,
-.phishing-toggle:has(input:checked) {
-    border-color: var(--secondary);
-    background: rgba(255, 140, 0, 0.1);
-    box-shadow: 0 0 12px rgba(255, 140, 0, 0.15);
-}
-
-.phishing-toggle input[type="checkbox"] {
-    display: none;
-}
-
-.phishing-slider {
-    position: relative;
-    width: 32px;
-    height: 16px;
-    background: var(--border);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}
-
-.phishing-slider::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 12px;
-    height: 12px;
-    background: var(--text-dim);
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.phishing-toggle input:checked+.phishing-slider {
-    background: var(--secondary);
-    box-shadow: 0 0 8px rgba(255, 140, 0, 0.4);
-}
-
-.phishing-toggle input:checked+.phishing-slider::after {
-    left: 18px;
-    background: #fff;
-}
-
-.phishing-label {
+.parent-label {
     font-size: 0.7rem;
-    color: var(--text-dim);
+    color: var(--secondary);
     letter-spacing: 0.5px;
-    transition: color 0.3s;
 }
 
-.phishing-toggle input:checked~.phishing-label {
+.parent-select {
+    background: var(--background);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    outline: none;
+    font-size: 0.8rem;
+    min-width: 260px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+}
+
+.parent-select:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.2);
+}
+
+.parent-select:has(option[value]:not([value=""]):checked) {
+    border-color: var(--secondary);
     color: var(--secondary);
-    text-shadow: 0 0 6px rgba(255, 140, 0, 0.3);
+    box-shadow: 0 0 8px rgba(255, 140, 0, 0.15);
+}
+
+.parent-select option {
+    background: var(--surface);
+    color: var(--text-main);
+    padding: 0.5rem;
 }

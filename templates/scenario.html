@@ -32,12 +32,21 @@
     </section>
 
     <div class="scenario-controls">
-        <label class="phishing-toggle"
-            title="Wrap execution in Word macro delivery chain (WINWORD.EXE → cmd.exe → PowerShell)">
-            <input type="checkbox" id="wordToggle" onchange="updateWordToggle()">
-            <span class="phishing-slider"></span>
-            <span class="phishing-label mono">📧 PHISHING DELIVERY</span>
-        </label>
+        <div class="parent-process-selector" title="Select parent process to spoof (PPID Spoofing)">
+            <label class="mono parent-label">🔗 PARENT PROCESS</label>
+            <select class="parent-select mono" id="parentSelect" onchange="updateExecBtn()">
+                <option value="">Direct Execution (No Parent)</option>
+                <option value="WINWORD">📄 WINWORD.EXE — Word Macro</option>
+                <option value="EXCEL">📊 EXCEL.EXE — Excel Macro</option>
+                <option value="OUTLOOK">📧 OUTLOOK.EXE — Email Client</option>
+                <option value="calc">🧮 calc.exe — Process Hollowing</option>
+                <option value="notepad">📝 notepad.exe — Process Injection</option>
+                <option value="explorer">📁 explorer.exe — Trusted Parent</option>
+                <option value="mshta">⚡ mshta.exe — HTA Proxy Exec</option>
+                <option value="rundll32">🔧 rundll32.exe — DLL Proxy</option>
+                <option value="svchost">⚙️ svchost.exe — Service Host</option>
+            </select>
+        </div>
         <button class="btn" id="executeBtn" onclick="executeScenario()">EXECUTE SCENARIO</button>
     </div>
 
@@ -86,7 +95,7 @@
 
     async function executeScenario() {
         const btn = document.getElementById('executeBtn');
-        const useWordLauncher = document.getElementById('wordToggle').checked;
+        const parentProcess = document.getElementById('parentSelect').value;
         btn.disabled = true;
         btn.textContent = 'EXECUTING...';
         btn.style.opacity = '0.5';
@@ -97,7 +106,7 @@
         const targetIp = localStorage.getItem('target_ip') || '127.0.0.1';
 
         if (!c2Host) addLog('[!] WARNING: No C2 Server set. Please configure in sidebar.');
-        if (useWordLauncher) addLog('[*] PHISHING DELIVERY MODE: WINWORD.EXE → cmd.exe → PowerShell');
+        if (parentProcess) addLog('[*] PARENT PROCESS SPOOFING: ' + parentProcess + '.exe -> cmd.exe -> PowerShell');
         addLog('[INFO] Initializing ' + SCENARIO.name + '...');
         addLog('[INFO] Target: ' + targetIp);
         addLog('[INFO] Adversary Infrastructure: ' + (c2Host || 'Unknown'));
@@ -111,7 +120,7 @@
                     scriptPath: SCENARIO.scriptPath,
                     c2Host: c2Host,
                     targetIp: targetIp,
-                    useWordLauncher: useWordLauncher
+                    parentProcess: parentProcess
                 })
             });
             const data = await res.json();
@@ -136,14 +145,15 @@
         }
 
         btn.disabled = false;
-        btn.textContent = document.getElementById('wordToggle').checked ? '📄 EXECUTE VIA WORD' : 'EXECUTE SCENARIO';
+        const selected = document.getElementById('parentSelect').value;
+        btn.textContent = selected ? 'EXECUTE VIA ' + selected.toUpperCase() : 'EXECUTE SCENARIO';
         btn.style.opacity = '1';
     }
 
-    function updateWordToggle() {
+    function updateExecBtn() {
         const btn = document.getElementById('executeBtn');
-        const checked = document.getElementById('wordToggle').checked;
-        btn.textContent = checked ? '📄 EXECUTE VIA WORD' : 'EXECUTE SCENARIO';
+        const selected = document.getElementById('parentSelect').value;
+        btn.textContent = selected ? 'EXECUTE VIA ' + selected.toUpperCase() : 'EXECUTE SCENARIO';
     }
 </script>
 {% endblock %}

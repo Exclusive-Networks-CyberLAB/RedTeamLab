@@ -29,12 +29,21 @@
     </section>
 
     <div class="scenario-controls">
-        <label class="phishing-toggle"
-            title="Wrap all campaign steps in Word macro delivery chain (WINWORD.EXE → cmd.exe → PowerShell)">
-            <input type="checkbox" id="wordToggle" onchange="updateWordToggle()">
-            <span class="phishing-slider"></span>
-            <span class="phishing-label mono">📧 PHISHING DELIVERY</span>
-        </label>
+        <div class="parent-process-selector" title="Select parent process to spoof for all campaign steps">
+            <label class="mono parent-label">🔗 PARENT PROCESS</label>
+            <select class="parent-select mono" id="parentSelect" onchange="updateExecBtn()">
+                <option value="">Direct Execution (No Parent)</option>
+                <option value="WINWORD">📄 WINWORD.EXE — Word Macro</option>
+                <option value="EXCEL">📊 EXCEL.EXE — Excel Macro</option>
+                <option value="OUTLOOK">📧 OUTLOOK.EXE — Email Client</option>
+                <option value="calc">🧮 calc.exe — Process Hollowing</option>
+                <option value="notepad">📝 notepad.exe — Process Injection</option>
+                <option value="explorer">📁 explorer.exe — Trusted Parent</option>
+                <option value="mshta">⚡ mshta.exe — HTA Proxy Exec</option>
+                <option value="rundll32">🔧 rundll32.exe — DLL Proxy</option>
+                <option value="svchost">⚙️ svchost.exe — Service Host</option>
+            </select>
+        </div>
         <button class="btn" id="executeCampaignBtn" onclick="executeCampaign()">EXECUTE CAMPAIGN</button>
     </div>
 
@@ -98,7 +107,7 @@
 
     async function executeCampaign() {
         const btn = document.getElementById('executeCampaignBtn');
-        const useWordLauncher = document.getElementById('wordToggle').checked;
+        const parentProcess = document.getElementById('parentSelect').value;
         btn.disabled = true;
         btn.textContent = 'CAMPAIGN IN PROGRESS...';
         btn.style.opacity = '0.5';
@@ -111,7 +120,7 @@
         addLog('[INFO] Initializing Campaign: ' + CAMPAIGN.name);
         addLog('[INFO] Target: ' + targetIp);
         addLog('[INFO] C2: ' + c2Host);
-        if (useWordLauncher) addLog('[*] PHISHING DELIVERY MODE: All steps via WINWORD.EXE → cmd.exe → PowerShell');
+        if (parentProcess) addLog('[*] PARENT PROCESS SPOOFING: All steps via ' + parentProcess + '.exe -> cmd.exe -> PowerShell');
 
         // Dim pending steps
         for (let i = 0; i < RESOLVED_STEPS.length; i++) {
@@ -141,7 +150,7 @@
                         scriptPath: step.scriptPath,
                         c2Host: c2Host,
                         targetIp: targetIp,
-                        useWordLauncher: useWordLauncher
+                        parentProcess: parentProcess
                     })
                 });
                 const data = await res.json();
@@ -169,14 +178,15 @@
         addLog('[+] Campaign Execution Completed.');
 
         btn.disabled = false;
-        btn.textContent = document.getElementById('wordToggle').checked ? '📄 EXECUTE CAMPAIGN VIA WORD' : 'EXECUTE CAMPAIGN';
+        const selected = document.getElementById('parentSelect').value;
+        btn.textContent = selected ? 'EXECUTE CAMPAIGN VIA ' + selected.toUpperCase() : 'EXECUTE CAMPAIGN';
         btn.style.opacity = '1';
     }
 
-    function updateWordToggle() {
+    function updateExecBtn() {
         const btn = document.getElementById('executeCampaignBtn');
-        const checked = document.getElementById('wordToggle').checked;
-        btn.textContent = checked ? '📄 EXECUTE CAMPAIGN VIA WORD' : 'EXECUTE CAMPAIGN';
+        const selected = document.getElementById('parentSelect').value;
+        btn.textContent = selected ? 'EXECUTE CAMPAIGN VIA ' + selected.toUpperCase() : 'EXECUTE CAMPAIGN';
     }
 </script>
 {% endblock %}
