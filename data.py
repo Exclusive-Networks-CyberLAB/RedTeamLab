@@ -427,6 +427,123 @@ SCENARIOS = [
         "scriptPath": "scenarios/byovd/edr_process_kill.ps1",
         "estimatedDuration": "3 mins",
         "difficulty": "Medium"
+    },
+    # Identity Attacks
+    {
+        "id": "identity-dcsync",
+        "name": "DCSync (Mimikatz)",
+        "adversary": "APT28",
+        "tactic": "Credential Access",
+        "description": "Replicates password data from the Domain Controller using Directory Replication Service (DRS) via Mimikatz lsadump::dcsync.",
+        "mitreTechniques": [
+            {"id": "T1003.006", "name": "OS Credential Dumping: DCSync", "url": "https://attack.mitre.org/techniques/T1003/006/"}
+        ],
+        "scriptPath": "scenarios/identity_attacks/dcsync.ps1",
+        "estimatedDuration": "5 mins",
+        "difficulty": "Hard"
+    },
+    {
+        "id": "identity-kerberoast",
+        "name": "Kerberoasting",
+        "adversary": "Scattered Spider",
+        "tactic": "Credential Access",
+        "description": "Requests TGS tickets for accounts with SPNs and exports them for offline password cracking using native .NET and Rubeus.",
+        "mitreTechniques": [
+            {"id": "T1558.003", "name": "Steal or Forge Kerberos Tickets: Kerberoasting", "url": "https://attack.mitre.org/techniques/T1558/003/"}
+        ],
+        "scriptPath": "scenarios/identity_attacks/kerberoast.ps1",
+        "estimatedDuration": "3 mins",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "identity-asrep-roast",
+        "name": "AS-REP Roasting",
+        "adversary": "Red Team Ops",
+        "tactic": "Credential Access",
+        "description": "Finds accounts with Kerberos preauthentication disabled and requests AS-REP hashes for offline cracking via Rubeus.",
+        "mitreTechniques": [
+            {"id": "T1558.004", "name": "Steal or Forge Kerberos Tickets: AS-REP Roasting", "url": "https://attack.mitre.org/techniques/T1558/004/"}
+        ],
+        "scriptPath": "scenarios/identity_attacks/asrep_roast.ps1",
+        "estimatedDuration": "3 mins",
+        "difficulty": "Medium"
+    },
+    {
+        "id": "identity-golden-ticket",
+        "name": "Golden Ticket Attack",
+        "adversary": "APT28",
+        "tactic": "Credential Access",
+        "description": "Forges a TGT using the krbtgt NTLM hash via Mimikatz, granting unrestricted domain access. Includes automatic DCSync for hash extraction.",
+        "mitreTechniques": [
+            {"id": "T1558.001", "name": "Steal or Forge Kerberos Tickets: Golden Ticket", "url": "https://attack.mitre.org/techniques/T1558/001/"}
+        ],
+        "scriptPath": "scenarios/identity_attacks/golden_ticket.ps1",
+        "estimatedDuration": "5 mins",
+        "difficulty": "Hard",
+        "hasRevert": True,
+        "revertScriptPath": "scenarios/identity_attacks/golden_ticket_revert.ps1",
+        "inputParams": [{
+            "name": "KrbtgtHash",
+            "label": "krbtgt NTLM Hash (optional — will DCSync if blank)",
+            "type": "text",
+            "placeholder": "aad3b435b51404eeaad3b435b51404ee",
+            "required": False
+        }]
+    },
+    {
+        "id": "identity-silver-ticket",
+        "name": "Silver Ticket Attack",
+        "adversary": "Scattered Spider",
+        "tactic": "Credential Access",
+        "description": "Forges a TGS for specific services (CIFS, HOST, HTTP) using a service account NTLM hash. More stealthy than Golden Ticket — never contacts the KDC.",
+        "mitreTechniques": [
+            {"id": "T1558.002", "name": "Steal or Forge Kerberos Tickets: Silver Ticket", "url": "https://attack.mitre.org/techniques/T1558/002/"}
+        ],
+        "scriptPath": "scenarios/identity_attacks/silver_ticket.ps1",
+        "estimatedDuration": "5 mins",
+        "difficulty": "Hard",
+        "inputParams": [{
+            "name": "ServiceHash",
+            "label": "Service Account NTLM Hash (optional — will DCSync if blank)",
+            "type": "text",
+            "placeholder": "aad3b435b51404eeaad3b435b51404ee",
+            "required": False
+        }]
+    },
+    {
+        "id": "identity-diamond-ticket",
+        "name": "Diamond Ticket Attack",
+        "adversary": "Red Team Ops",
+        "tactic": "Credential Access",
+        "description": "Requests a legitimate TGT, decrypts and modifies its PAC data, then re-encrypts. Harder to detect than Golden Ticket because the ticket was legitimately issued.",
+        "mitreTechniques": [
+            {"id": "T1558.001", "name": "Steal or Forge Kerberos Tickets: Golden Ticket", "url": "https://attack.mitre.org/techniques/T1558/001/"}
+        ],
+        "scriptPath": "scenarios/identity_attacks/diamond_ticket.ps1",
+        "estimatedDuration": "5 mins",
+        "difficulty": "Hard",
+        "inputParams": [{
+            "name": "KrbtgtHash",
+            "label": "krbtgt Hash (AES256 or NTLM — optional)",
+            "type": "text",
+            "placeholder": "aes256 or ntlm hash",
+            "required": False
+        }]
+    },
+    {
+        "id": "identity-impacket",
+        "name": "Impacket Suite Execution",
+        "adversary": "APT28",
+        "tactic": "Lateral Movement",
+        "description": "Downloads and executes Impacket standalone tools: secretsdump (DCSync), wmiexec, smbexec, psexec, and GetUserSPNs for remote execution and credential extraction.",
+        "mitreTechniques": [
+            {"id": "T1021.002", "name": "Remote Services: SMB", "url": "https://attack.mitre.org/techniques/T1021/002/"},
+            {"id": "T1047", "name": "Windows Management Instrumentation", "url": "https://attack.mitre.org/techniques/T1047/"},
+            {"id": "T1003.006", "name": "OS Credential Dumping: DCSync", "url": "https://attack.mitre.org/techniques/T1003/006/"}
+        ],
+        "scriptPath": "scenarios/identity_attacks/impacket_exec.ps1",
+        "estimatedDuration": "5 mins",
+        "difficulty": "Hard"
     }
 ]
 
@@ -500,6 +617,20 @@ CAMPAIGNS = [
         "name": "APT Full Intrusion Chain",
         "description": "Sophisticated APT attack: stealthy BITS download, LSASS credential dump, WMI lateral movement, and kernel-level EDR bypass via vulnerable driver.",
         "steps": ["lolbin-bitsadmin", "cred-procdump-lsass", "lateral-wmi", "lateral-pth", "byovd-rtcore"]
+    },
+    {
+        "id": "ad-identity-takeover-campaign",
+        "adversary": "APT28",
+        "name": "AD Identity Takeover",
+        "description": "Full domain compromise chain: DCSync credential extraction, Golden Ticket forging for persistence, and Impacket-based remote execution across the domain.",
+        "steps": ["identity-dcsync", "identity-golden-ticket", "identity-impacket"]
+    },
+    {
+        "id": "kerberos-abuse-campaign",
+        "adversary": "Scattered Spider",
+        "name": "Kerberos Abuse Campaign",
+        "description": "Comprehensive Kerberos attack chain: SPN enumeration and Kerberoasting, AS-REP Roasting for weak accounts, Silver Ticket for targeted service access, and Diamond Ticket for stealthy persistence.",
+        "steps": ["identity-kerberoast", "identity-asrep-roast", "identity-silver-ticket", "identity-diamond-ticket"]
     }
 ]
 
@@ -912,6 +1043,92 @@ THREAT_ACTORS = [
                     "placeholder": "10.0.0.1",
                     "required": True
                 }]
+            }
+        ]
+    },
+    {
+        "id": "identity-attacks",
+        "name": "Identity Attacks (AD/Kerberos)",
+        "aliases": ["Kerberos Abuse", "AD Attacks", "Impacket"],
+        "description": "Active Directory identity-based attacks targeting Kerberos authentication, credential replication, and ticket forging for domain compromise.",
+        "ttps": [
+            {
+                "id": "T1003.006",
+                "technique": "OS Credential Dumping: DCSync",
+                "tactic": "Credential Access",
+                "description": "Replicates password data from the DC using Directory Replication Service.",
+                "commandSnippet": 'mimikatz.exe "lsadump::dcsync /user:krbtgt" "exit"',
+                "scriptPath": "scenarios/identity_attacks/dcsync.ps1"
+            },
+            {
+                "id": "T1558.003",
+                "technique": "Kerberoasting",
+                "tactic": "Credential Access",
+                "description": "Requests TGS tickets for SPN accounts for offline cracking.",
+                "commandSnippet": "New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $SPN",
+                "scriptPath": "scenarios/identity_attacks/kerberoast.ps1"
+            },
+            {
+                "id": "T1558.004",
+                "technique": "AS-REP Roasting",
+                "tactic": "Credential Access",
+                "description": "Targets accounts without Kerberos preauthentication.",
+                "commandSnippet": "Rubeus.exe asreproast /format:hashcat",
+                "scriptPath": "scenarios/identity_attacks/asrep_roast.ps1"
+            },
+            {
+                "id": "T1558.001",
+                "technique": "Golden Ticket",
+                "tactic": "Credential Access",
+                "description": "Forges a TGT using the krbtgt NTLM hash for unrestricted domain access.",
+                "commandSnippet": 'mimikatz.exe "kerberos::golden /user:Admin /domain:YOURDOMAIN /sid:S-1-5-... /krbtgt:<HASH> /ptt"',
+                "scriptPath": "scenarios/identity_attacks/golden_ticket.ps1",
+                "revertScriptPath": "scenarios/identity_attacks/golden_ticket_revert.ps1",
+                "inputParams": [{
+                    "name": "KrbtgtHash",
+                    "label": "krbtgt NTLM Hash (optional)",
+                    "type": "text",
+                    "placeholder": "aad3b435b51404eeaad3b435b51404ee",
+                    "required": False
+                }]
+            },
+            {
+                "id": "T1558.002",
+                "technique": "Silver Ticket",
+                "tactic": "Credential Access",
+                "description": "Forges a TGS for specific services — never contacts the KDC.",
+                "commandSnippet": 'mimikatz.exe "kerberos::golden /service:cifs /target:<DC> /rc4:<HASH> /ptt"',
+                "scriptPath": "scenarios/identity_attacks/silver_ticket.ps1",
+                "inputParams": [{
+                    "name": "ServiceHash",
+                    "label": "Service Account NTLM Hash (optional)",
+                    "type": "text",
+                    "placeholder": "aad3b435b51404eeaad3b435b51404ee",
+                    "required": False
+                }]
+            },
+            {
+                "id": "T1558.001b",
+                "technique": "Diamond Ticket",
+                "tactic": "Credential Access",
+                "description": "Modifies a real TGT PAC — stealthier than Golden Ticket.",
+                "commandSnippet": "Rubeus.exe diamond /krbkey:<KEY> /ticketuser:Admin /ticketuserid:500 /groups:512 /ptt",
+                "scriptPath": "scenarios/identity_attacks/diamond_ticket.ps1",
+                "inputParams": [{
+                    "name": "KrbtgtHash",
+                    "label": "krbtgt Hash (optional)",
+                    "type": "text",
+                    "placeholder": "aes256 or ntlm hash",
+                    "required": False
+                }]
+            },
+            {
+                "id": "T1021.002b",
+                "technique": "Impacket Remote Execution Suite",
+                "tactic": "Lateral Movement",
+                "description": "Impacket tools for remote execution: secretsdump, wmiexec, smbexec, psexec.",
+                "commandSnippet": "secretsdump.exe DOMAIN/user@TARGET",
+                "scriptPath": "scenarios/identity_attacks/impacket_exec.ps1"
             }
         ]
     }
